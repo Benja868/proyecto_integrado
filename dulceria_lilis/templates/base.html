@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dulcería Lilis - Productos Artesanales</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    :root {
+        --color-primary: #c62828;
+        --color-secondary: #d32f2f;
+        --color-accent: #b71c1c;
+        --color-light: #ffebee;
+        --color-dark: #7f0000;
+        --color-background: #fafafa;
+    }
+    
+    body {
+        background-color: var(--color-background);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    .navbar {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%) !important;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(198, 40, 40, 0.15);
+        padding: 0.8rem 0;
+    }
+    
+    .navbar-brand {
+        font-weight: 700;
+        font-size: 1.6rem;
+        color: white !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+    
+    .navbar-nav .nav-link {
+        color: rgba(255, 255, 255, 0.9) !important;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        margin: 0 0.2rem;
+    }
+    
+    .navbar-nav .nav-link:hover {
+        color: white !important;
+        background-color: rgba(255, 255, 255, 0.15);
+        transform: translateY(-2px);
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+        border: none;
+        font-weight: 500;
+        padding: 0.6rem 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary:hover {
+        background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-dark) 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(198, 40, 40, 0.4);
+    }
+    
+    .btn-outline-primary {
+        color: var(--color-primary);
+        border: 2px solid var(--color-primary);
+        font-weight: 500;
+        padding: 0.5rem 1.5rem;
+        border-radius: 8px;
+        background: transparent;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 18px rgba(198, 40, 40, 0.3);
+        border-color: transparent;
+    }
+    
+    footer {
+        background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-accent) 100%);
+        color: white;
+        padding: 3rem 0 2rem;
+        margin-top: 4rem;
+        backdrop-filter: blur(10px);
+    }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <i class="fas fa-candy-cane"></i> Dulcería Lilis
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalogo_principal' %}">Productos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'informacion_empresa' %}">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
+
+                    <!-- 🔒 Botones dinámicos -->
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'profile' %}">
+                                <i class="fas fa-user"></i> {{ user.username }}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-primary ms-2" style="border:none; background:none;">
+                                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                                </button>
+                            </form>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-outline-primary ms-2" href="{% url 'login' %}">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar sesión
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-2" href="{% url 'register' %}">
+                                <i class="fas fa-user-plus"></i> Registrarse
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenido principal -->
+    <main class="container my-4">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container py-4">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><i class="fas fa-candy-cane"></i> Dulcería Lilis</h5>
+                    <p>Productos artesanales de la más alta calidad desde 2017.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contacto</h5>
+                    <p><i class="fas fa-map-marker-alt"></i> Avenida Amanecer #2030, Coquimbo</p>
+                    <p><i class="fas fa-phone"></i> +56 51 234 5678</p>
+                    <p><i class="fas fa-envelope"></i> ventas@lilis.cl</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Síguenos</h5>
+                    <a href="https://instagram.com/dulceria_lilis" class="text-white me-3"><i class="fab fa-instagram fa-2x"></i></a>
+                    <a href="https://facebook.com/lilisdulces" class="text-white"><i class="fab fa-facebook fa-2x"></i></a>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; 2025 Dulcería Lilis. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

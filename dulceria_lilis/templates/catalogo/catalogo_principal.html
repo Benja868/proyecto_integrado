@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+                <li class="breadcrumb-item active">Catálogo</li>
+            </ol>
+        </nav>
+        
+        <h1 class="mb-4">Nuestro Catálogo de Productos</h1>
+        <p class="lead">Descubre todos nuestros productos artesanales elaborados con amor y dedicación.</p>
+        
+        <div class="row">
+            {% for categoria in categorias %}
+            <div class="col-md-4 mb-4">
+                <div class="card categoria-card h-100">
+                    <img src="{% static 'images/' %}{% if categoria == 'Chocolates' %}chocolate_negro.jpg{% elif categoria == 'Galletas' %}galleta_chocolate.jpg{% elif categoria == 'Alfajores' %}alfajor_papaya.jpg{% elif categoria == 'Confitería' %}caluga_manjar_cabra.jpg{% else %}bombon_champagne.jpg{% endif %}" 
+                         class="card-img-top" alt="{{ categoria }}" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ categoria }}</h5>
+                        <p class="card-text">Explora nuestra selección de {{ categoria|lower }} artesanales.</p>
+                        <a href="{% url 'subcatalogo' categoria %}" class="btn btn-primary">Ver productos</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+<h2>Perfil de Usuario</h2>
+<p><strong>Usuario:</strong> {{ user.username }}</p>
+<p><strong>Email:</strong> {{ user.email }}</p>
+{% if user.userprofile %}
+    <p><strong>Organización:</strong> {{ user.userprofile.organization.name }}</p>
+{% endif %}
+<a href="{% url 'logout' %}" class="btn btn-secondary">Cerrar sesión</a>
+</div>
+{% endblock %}

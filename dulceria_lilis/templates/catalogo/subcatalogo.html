@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}">Inicio</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'catalogo_principal' %}">Catálogo</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'catalogo_principal' %}">Catálogo</a></li>
+                <li class="breadcrumb-item active">{{ categoria }}</li>
+            </ol>
+        </nav>
+        
+        <h1 class="mb-4">{{ categoria }}</h1>
+        
+        <div class="row">
+            {% for producto_id, producto in productos.items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <img src="{% static producto.imagen %}" class="card-img-top producto-img" alt="{{ producto.nombre }}">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ producto.nombre }}</h5>
+                        <p class="card-text">{{ producto.descripcion }}</p>
+                        <p class="text-muted">Tiempo de producción: {{ producto.tiempo_produccion }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'detalle_producto' categoria producto_id %}" class="btn btn-outline-primary">Ver detalles</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div class="mt-4">
+            <a href="{% url 'catalogo_principal' %}" class="btn btn-secondary">Volver al catálogo principal</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

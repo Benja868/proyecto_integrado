@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h1 class="mb-4">Sobre Dulcería Lilis</h1>
+        
+        <!-- Historia -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Nuestra Historia</h2>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ historia }}</p>
+            </div>
+        </div>
+        
+        <!-- Misión y Visión -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3>Misión</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ mision }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card h-100">
+                    <div class="card-header">
+                        <h3>Visión</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">{{ vision }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Valores -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>Nuestros Valores</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for valor in valores %}
+                    <div class="col-md-4 mb-2">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <span>{{ valor }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contacto -->
+        <div class="card mb-4" id="contacto">
+            <div class="card-header">
+                <h2>Contacto</h2>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for key, value in contactos.items %}
+                    <div class="col-md-6 mb-3">
+                        <strong>{{ key }}:</strong> 
+                        {% if key == 'Sitio web' %}
+                            <a href="http://{{ value }}">{{ value }}</a>
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <h5 class="mt-4">Síguenos en redes sociales</h5>
+                <div class="d-flex mt-2">
+                    {% for red, url in redes_sociales.items %}
+                    <a href="{{ url }}" class="btn btn-outline-dark me-2">
+                        <i class="fab fa-{{ red|lower }}"></i> {{ red }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
