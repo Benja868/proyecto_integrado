@@ -1,0 +1,4 @@
+[
+{"model": "catalogo.alertrule", "pk": 1, "fields": {"name": "Stock Bajo", "severity": "Low"}},
+{"model": "catalogo.alertrule", "pk": 2, "fields": {"name": "Stock Crítico", "severity": "High"}}
+]

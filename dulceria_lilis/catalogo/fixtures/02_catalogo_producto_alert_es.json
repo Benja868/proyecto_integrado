@@ -1,0 +1,4 @@
+[
+{"model": "catalogo.productalertrule", "pk": 1, "fields": {"product": 1, "alert_rule": 1, "min_value": 5, "max_value": 50}},
+{"model": "catalogo.productalertrule", "pk": 2, "fields": {"product": 2, "alert_rule": 2, "min_value": 2, "max_value": 10}}
+]
