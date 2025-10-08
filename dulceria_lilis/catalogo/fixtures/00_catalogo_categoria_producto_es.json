@@ -1,0 +1,8 @@
+[
+{"model": "catalogo.category", "pk": 1, "fields": {"name": "Chocolates"}},
+{"model": "catalogo.category", "pk": 2, "fields": {"name": "Alfajores"}},
+
+{"model": "catalogo.product", "pk": 1, "fields": {"name": "Caja Bombones", "sku": "SKU001", "category": 1}},
+{"model": "catalogo.product", "pk": 2, "fields": {"name": "Alfajor Papaya", "sku": "SKU002", "category": 2}},
+{"model": "catalogo.product", "pk": 3, "fields": {"name": "Chocolate Amargo", "sku": "SKU003", "category": 1}}
+]
