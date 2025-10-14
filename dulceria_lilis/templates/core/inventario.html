@@ -1,0 +1,16 @@
+{% extends 'base_admin.html' %}
+{% block title %}Inventario{% endblock %}
+{% block content %}
+<h2>Inventario de Productos</h2>
+<table class="table table-striped mt-3">
+    <thead class="table-danger">
+        <tr>
+            <th>ID</th><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Precio</th><th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr><td>1</td><td>Alfajor de Papaya</td><td>Alfajores</td><td>56</td><td>$1.500</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+        <tr><td>2</td><td>Conito de Higo</td><td>Chocolates</td><td>22</td><td>$2.000</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+    </tbody>
+</table>
+{% endblock %}

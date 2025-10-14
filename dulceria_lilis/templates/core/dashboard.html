@@ -1,8 +1,39 @@
-{% extends 'base.html' %}
-
+{% extends 'base_admin.html' %}
+{% block title %}Dashboard - Dulcería Lilis{% endblock %}
 {% block content %}
-<div class="container text-center mt-5">
-    <h1 class="fw-bold text-primary">Bienvenido al Dashboard 🎉</h1>
-    <p class="lead">Has iniciado sesión correctamente.</p>
+<h2 class="mb-4">Panel de Control</h2>
+<div class="row g-4">
+    <div class="col-md-3">
+        <div class="card text-bg-primary text-center">
+            <div class="card-body">
+                <h5>Ventas Hoy</h5>
+                <p class="display-6">$1.230.000</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-success text-center">
+            <div class="card-body">
+                <h5>Productos en Stock</h5>
+                <p class="display-6">128</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-warning text-center">
+            <div class="card-body">
+                <h5>Pedidos Pendientes</h5>
+                <p class="display-6">8</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-bg-danger text-center">
+            <div class="card-body">
+                <h5>Bajo Stock</h5>
+                <p class="display-6">4</p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

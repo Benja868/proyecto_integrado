@@ -1,0 +1,14 @@
+{% extends 'base_admin.html' %}
+{% block title %}Producción{% endblock %}
+{% block content %}
+<h2>Control de Producción</h2>
+<table class="table table-hover mt-3">
+    <thead class="table-danger">
+        <tr><th>Producto</th><th>Lote</th><th>Fecha Producción</th><th>Cantidad</th><th>Estado</th></tr>
+    </thead>
+    <tbody>
+        <tr><td>Torta Selva Negra</td><td>L-223</td><td>2025-10-07</td><td>12</td><td>Envasado</td></tr>
+        <tr><td>Galletas Avena</td><td>L-225</td><td>2025-10-09</td><td>80</td><td>Producción</td></tr>
+    </tbody>
+</table>
+{% endblock %}
