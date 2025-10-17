@@ -1,16 +1,34 @@
 {% extends 'base_admin.html' %}
-{% block title %}Inventario{% endblock %}
 {% block content %}
-<h2>Inventario de Productos</h2>
-<table class="table table-striped mt-3">
-    <thead class="table-danger">
-        <tr>
-            <th>ID</th><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Precio</th><th>Acciones</th>
-        </tr>
-    </thead>
+<h2>Inventario</h2>
+<div class="row">
+<div class="col-md-5">
+    <div class="card p-3">
+    <h5>Agregar Producto</h5>
+    <form method="post" novalidate>
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-2">{{ form.nombre.label_tag }} {{ form.nombre }}</div>
+        <div class="mb-2">{{ form.categoria.label_tag }} {{ form.categoria }}</div>
+        <div class="mb-2">{{ form.stock.label_tag }} {{ form.stock }}</div>
+        <div class="mb-2">{{ form.precio.label_tag }} {{ form.precio }}</div>
+        <button class="btn btn-primary">Guardar</button>
+    </form>
+    </div>
+</div>
+
+<div class="col-md-7">
+    <h5>Productos</h5>
+    <table class="table table-hover">
+    <thead><tr><th>Nombre</th><th>Categoría</th><th>Stock</th><th>Precio</th></tr></thead>
     <tbody>
-        <tr><td>1</td><td>Alfajor de Papaya</td><td>Alfajores</td><td>56</td><td>$1.500</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
-        <tr><td>2</td><td>Conito de Higo</td><td>Chocolates</td><td>22</td><td>$2.000</td><td><button class="btn btn-sm btn-warning">Editar</button></td></tr>
+        {% for p in productos %}
+        <tr><td>{{ p.nombre }}</td><td>{{ p.categoria }}</td><td>{{ p.stock }}</td><td>${{ p.precio }}</td></tr>
+        {% empty %}
+        <tr><td colspan="4">No hay productos</td></tr>
+        {% endfor %}
     </tbody>
-</table>
+    </table>
+</div>
+</div>
 {% endblock %}
