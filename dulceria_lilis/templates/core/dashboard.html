@@ -1,39 +1,11 @@
 {% extends 'base_admin.html' %}
 {% block title %}Dashboard - Dulcería Lilis{% endblock %}
 {% block content %}
-<h2 class="mb-4">Panel de Control</h2>
-<div class="row g-4">
-    <div class="col-md-3">
-        <div class="card text-bg-primary text-center">
-            <div class="card-body">
-                <h5>Ventas Hoy</h5>
-                <p class="display-6">$1.230.000</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-success text-center">
-            <div class="card-body">
-                <h5>Productos en Stock</h5>
-                <p class="display-6">128</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-warning text-center">
-            <div class="card-body">
-                <h5>Pedidos Pendientes</h5>
-                <p class="display-6">8</p>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card text-bg-danger text-center">
-            <div class="card-body">
-                <h5>Bajo Stock</h5>
-                <p class="display-6">4</p>
-            </div>
-        </div>
-    </div>
+<h1>Panel de Control</h1>
+<div class="row g-3 mt-4">
+<div class="col-md-3"><div class="card-indicator card-blue text-center"><h6>Ventas Hoy</h6><h3>${{ ventas_count }}</h3></div></div>
+<div class="col-md-3"><div class="card-indicator card-green text-center"><h6>Productos en Stock</h6><h3>{{ productos_stock }}</h3></div></div>
+<div class="col-md-3"><div class="card-indicator card-yellow text-center"><h6>Pedidos Pendientes</h6><h3>{{ pedidos_pendientes }}</h3></div></div>
+<div class="col-md-3"><div class="card-indicator card-red text-center"><h6>Bajo Stock</h6><h3>{{ bajo_stock }}</h3></div></div>
 </div>
 {% endblock %}

@@ -1,14 +1,32 @@
 {% extends 'base_admin.html' %}
-{% block title %}Producción{% endblock %}
 {% block content %}
-<h2>Control de Producción</h2>
-<table class="table table-hover mt-3">
-    <thead class="table-danger">
-        <tr><th>Producto</th><th>Lote</th><th>Fecha Producción</th><th>Cantidad</th><th>Estado</th></tr>
-    </thead>
+<h2>Producción</h2>
+<div class="row">
+<div class="col-md-5">
+    <div class="card p-3">
+    <h5>Registrar Producción</h5>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-2">{{ form.producto.label_tag }} {{ form.producto }}</div>
+        <div class="mb-2">{{ form.cantidad_producida.label_tag }} {{ form.cantidad_producida }}</div>
+        <button class="btn btn-primary">Registrar</button>
+    </form>
+    </div>
+</div>
+
+<div class="col-md-7">
+    <h5>Historial</h5>
+    <table class="table">
+    <thead><tr><th>Producto</th><th>Cantidad</th><th>Fecha</th></tr></thead>
     <tbody>
-        <tr><td>Torta Selva Negra</td><td>L-223</td><td>2025-10-07</td><td>12</td><td>Envasado</td></tr>
-        <tr><td>Galletas Avena</td><td>L-225</td><td>2025-10-09</td><td>80</td><td>Producción</td></tr>
+        {% for p in producciones %}
+        <tr><td>{{ p.producto.nombre }}</td><td>{{ p.cantidad_producida }}</td><td>{{ p.fecha_produccion }}</td></tr>
+        {% empty %}
+        <tr><td colspan="3">No hay registros</td></tr>
+        {% endfor %}
     </tbody>
-</table>
+    </table>
+</div>
+</div>
 {% endblock %}

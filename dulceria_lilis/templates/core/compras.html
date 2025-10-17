@@ -1,14 +1,33 @@
 {% extends 'base_admin.html' %}
-{% block title %}Compras{% endblock %}
 {% block content %}
-<h2>Gestión de Compras</h2>
-<table class="table mt-3">
-    <thead class="table-danger">
-        <tr><th>Proveedor</th><th>Fecha</th><th>Monto</th><th>Estado</th></tr>
-    </thead>
+<h2>Compras</h2>
+<div class="row">
+<div class="col-md-5">
+    <div class="card p-3">
+    <h5>Registrar Compra</h5>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-2">{{ form.producto.label_tag }} {{ form.producto }}</div>
+        <div class="mb-2">{{ form.cantidad.label_tag }} {{ form.cantidad }}</div>
+        <div class="mb-2">{{ form.total.label_tag }} {{ form.total }}</div>
+        <button class="btn btn-primary">Registrar</button>
+    </form>
+    </div>
+</div>
+
+<div class="col-md-7">
+    <h5>Historial</h5>
+    <table class="table">
+    <thead><tr><th>Producto</th><th>Cantidad</th><th>Total</th><th>Fecha</th></tr></thead>
     <tbody>
-        <tr><td>Distribuidora La Dulce</td><td>2025-10-08</td><td>$320.000</td><td>Completada</td></tr>
-        <tr><td>Cacao Export</td><td>2025-10-05</td><td>$120.000</td><td>Pendiente</td></tr>
+        {% for c in compras %}
+        <tr><td>{{ c.producto.nombre }}</td><td>{{ c.cantidad }}</td><td>${{ c.total }}</td><td>{{ c.fecha_compra }}</td></tr>
+        {% empty %}
+        <tr><td colspan="4">No hay compras</td></tr>
+        {% endfor %}
     </tbody>
-</table>
+    </table>
+</div>
+</div>
 {% endblock %}

@@ -1,8 +1,9 @@
+# core/urls.py
 from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('', views.home, name='home'),  # Página de inicio
+    path('', views.home, name='home'),
     path('dashboard/', views.dashboard, name='dashboard'),
     path('inventario/', views.inventario, name='inventario'),
     path('compras/', views.compras, name='compras'),
@@ -10,5 +11,4 @@ urlpatterns = [
     path('ventas/', views.ventas, name='ventas'),
     path('finanzas/', views.finanzas, name='finanzas'),
     path('clientes/', views.clientes, name='clientes'),
-]  
-
+]
