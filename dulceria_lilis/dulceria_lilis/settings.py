@@ -61,18 +61,22 @@ WSGI_APPLICATION = 'dulceria_lilis.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.getenv('DB_NAME', 'dulceria_lilis'),
-        'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', ''),
-        'HOST': os.getenv('DB_HOST', '127.0.0.1'),
-        'PORT': os.getenv('DB_PORT', '3306'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'dulceria_lilis_db',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '3306',
         'OPTIONS': {
-            'charset': 'utf8mb4',
+            'charset': 'utf8',  # ⚙️ en lugar de utf8mb4 para evitar 1000-byte limit
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES', innodb_strict_mode=1",
         },
     }
 }
+
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
