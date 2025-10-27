@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-from .models import Cliente, Producto, Compra, Venta, Produccion, Finanzas
+from .models import Cliente, Producto, Compra, Venta, Produccion, Finanzas, Proveedor
 from .forms import ClienteForm, ProductoForm, CompraForm, VentaForm, ProduccionForm, FinanzasForm
 
 def home(request):
@@ -117,3 +117,13 @@ def finanzas(request):
     total_gastos = sum(r.gasto for r in registros)
     balance = total_ingresos - total_gastos
     return render(request, 'core/finanzas.html', {'form': form, 'registros': registros, 'balance': balance, 'total_ingresos': total_ingresos, 'total_gastos': total_gastos})
+
+# Vista para listar proveedores
+def proveedores(request):
+    proveedores = Proveedor.objects.all()  # <-- Trae todos los registros desde MySQL
+    return render(request, 'core/proveedores.html', {'proveedores': proveedores})
+
+# Vista para listar productos
+def productos(request):
+    productos = Producto.objects.select_related('proveedor').all()  # <-- Incluye proveedor asociado
+    return render(request, 'core/productos.html', {'productos': productos})
