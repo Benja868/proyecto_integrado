@@ -1,11 +1,119 @@
 {% extends 'base_admin.html' %}
+{% load humanize %} <!-- Para formatear números con separadores de miles -->
+
 {% block title %}Dashboard - Dulcería Lilis{% endblock %}
+
 {% block content %}
-<h1>Panel de Control</h1>
-<div class="row g-3 mt-4">
-<div class="col-md-3"><div class="card-indicator card-blue text-center"><h6>Ventas Hoy</h6><h3>${{ ventas_count }}</h3></div></div>
-<div class="col-md-3"><div class="card-indicator card-green text-center"><h6>Productos en Stock</h6><h3>{{ productos_stock }}</h3></div></div>
-<div class="col-md-3"><div class="card-indicator card-yellow text-center"><h6>Pedidos Pendientes</h6><h3>{{ pedidos_pendientes }}</h3></div></div>
-<div class="col-md-3"><div class="card-indicator card-red text-center"><h6>Bajo Stock</h6><h3>{{ bajo_stock }}</h3></div></div>
+<h1 class="mb-4">Panel de Control</h1>
+
+<!-- ===================== Fila de Indicadores Principales ===================== -->
+<div class="row g-3">
+
+  <!-- === Ventas Hoy === -->
+  <div class="col-lg-3 col-md-6">
+    <div class="card-indicator card-blue text-center mb-3">
+      <h6>Ventas Hoy (#)</h6>
+      <h3 title="{{ ventas_hoy_count }} transacciones">
+        {{ ventas_hoy_count|default:0 }}
+      </h3>
+    </div>
+    <div class="card-indicator card-blue text-center">
+      <h6>Ventas Hoy ($)</h6>
+      <h3 title="${{ ventas_hoy_total|intcomma }}">
+        ${{ ventas_hoy_total|default:0|intcomma }}
+      </h3>
+    </div>
+  </div>
+
+  <!-- === Stock === -->
+  <div class="col-lg-3 col-md-6">
+    <div class="card-indicator card-green text-center mb-3">
+      <h6>Items en Stock ({{ warehouse_name|default:'Principal' }})</h6>
+      <h3 title="{{ stock_total_items|floatformat:2 }} unidades en total">
+        {{ stock_total_items|default:0|floatformat:0|intcomma }}
+      </h3>
+    </div>
+    <div class="card-indicator card-red text-center">
+      <h6>Productos Bajo Mínimo ({{ warehouse_name|default:'Principal' }})</h6>
+      <h3 title="{{ bajo_stock_count }} productos bajo stock mínimo">
+        {{ bajo_stock_count|default:0 }}
+      </h3>
+    </div>
+  </div>
+
+  <!-- === Pedidos y Otros (Placeholders) === -->
+  <div class="col-lg-3 col-md-6">
+    <div class="card-indicator card-yellow text-center mb-3">
+      <h6>Pedidos Pendientes</h6>
+      <h3>{{ pedidos_pendientes_count|default:'--' }}</h3>
+      <small>(Funcionalidad futura)</small>
+    </div>
+    <div class="card-indicator card-secondary text-center">
+      <h6>Clientes Activos</h6>
+      <h3>--</h3>
+      <small>(Conectar con módulo Clientes)</small>
+    </div>
+  </div>
+
+  <!-- === Accesos Rápidos === -->
+  <div class="col-lg-3 col-md-6">
+    <div class="card h-100 shadow-sm">
+      <div class="card-header bg-light fw-bold">
+        Accesos Rápidos
+      </div>
+      <div class="list-group list-group-flush">
+
+        <!-- Enlaces desactivados (futuros módulos) -->
+        <a href="#" class="list-group-item list-group-item-action disabled">
+          <i class="fas fa-cash-register fa-fw me-2 text-primary"></i>Registrar Venta
+        </a>
+        <a href="#" class="list-group-item list-group-item-action disabled">
+          <i class="fas fa-cart-plus fa-fw me-2 text-success"></i>Registrar Compra
+        </a>
+        <a href="#" class="list-group-item list-group-item-action disabled">
+          <i class="fas fa-industry fa-fw me-2 text-info"></i>Registrar Producción
+        </a>
+        <a href="#" class="list-group-item list-group-item-action disabled">
+          <i class="fas fa-exchange-alt fa-fw me-2 text-warning"></i>Registrar Mov. Inventario
+        </a>
+
+        <!-- Enlaces activos -->
+        <a href="{% url 'catalogo:product_list' %}" class="list-group-item list-group-item-action">
+          <i class="fas fa-cubes fa-fw me-2 text-secondary"></i>Gestionar Productos
+        </a>
+        <a href="#" class="list-group-item list-group-item-action disabled">
+          <i class="fas fa-truck-field fa-fw me-2 text-dark"></i>Gestionar Proveedores
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================== Placeholder para gráficos futuros ===================== -->
+<div class="row mt-4 g-3">
+
+  <!-- Gráfico Ventas -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Ventas Últimos 7 Días (Gráfico)</h5>
+        <p class="text-muted text-center mt-3">
+          -- Integrar librería de gráficos (ej. Chart.js o Plotly) aquí --
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gráfico Stock -->
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h5 class="card-title mb-3">Stock por Categoría (Gráfico)</h5>
+        <p class="text-muted text-center mt-3">
+          -- Integrar librería de gráficos (ej. Chart.js o ApexCharts) aquí --
+        </p>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}

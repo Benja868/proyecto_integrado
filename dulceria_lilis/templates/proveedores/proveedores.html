@@ -1,0 +1,48 @@
+{% extends 'base_admin.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gestión de Proveedores</h2>
+        <a href="{% url 'proveedores:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-1"></i> Nuevo Proveedor
+        </a>
+    </div>
+
+    <h4>Lista de Proveedores</h4>
+    <table class="table table-striped table-hover">
+        <thead class="table-dark"> <tr>
+                <th>RUT/NIF</th>
+                <th>Razón Social</th>
+                <th>Email</th>
+                <th>Teléfono</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for proveedor in proveedores %}
+            <tr>
+                <td>{{ proveedor.rut_nif }}</td>
+                <td>{{ proveedor.razon_social }} {% if proveedor.nombre_fantasia %}({{ proveedor.nombre_fantasia }}){% endif %}</td>
+                <td>{{ proveedor.email }}</td>
+                <td>{{ proveedor.telefono }}</td>
+                <td>
+                    <span class="badge {% if proveedor.estado == 'ACTIVO' %}bg-success{% else %}bg-danger{% endif %}">
+                        {{ proveedor.get_estado_display }}
+                    </span>
+                </td>
+                <td>
+                    <a href="{% url 'proveedores:update' proveedor.pk %}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="6" class="text-center">No hay proveedores registrados.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% endblock %}
