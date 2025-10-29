@@ -3,119 +3,126 @@
 
 {% block content %}
 <div id="main-content">
-
 <div class="row">
     <div class="col-md-12">
-        <!-- Hero Section -->
-        <div class="hero-section p-5 rounded-2xl mb-5 text-center elevate">
-            <h1 class="display-4 fw-bold mb-3">Bienvenido a Dulcería Lilis 🍬</h1>
-            <p class="lead fs-5 opacity-90 mb-4">Descubre nuestros exquisitos productos artesanales elaborados con las más finas materias primas y recetas tradicionales de origen alemán.</p>
-            <hr class="my-4 bg-white opacity-25" style="width: 50%; margin: 0 auto;">
-            <p class="fs-6 opacity-80 mb-4">Desde 2017 endulzando momentos especiales con sabor y tradición.</p>
-            <a class="btn btn-light btn-lg px-4 py-2 fw-medium rounded-pill shadow-soft" href="{% url 'catalogo_principal' %}" role="button" style="background: rgba(255, 255, 255, 0.95);">
-                <i class="fas fa-gift me-2"></i>Descubrir Productos
+    <!-- Hero Section -->
+    <div class="hero-section p-5 rounded-lg mb-5 text-center shadow">
+        <h1 class="display-4 fw-bold mb-3">Bienvenido a Dulcería Lilis 🍬</h1>
+        <p class="lead fs-5 text-muted mb-4">
+        Descubre nuestros exquisitos productos artesanales elaborados con las más finas materias primas y recetas tradicionales.
+        </p>
+        <hr class="my-4" style="width: 50%; margin: 0 auto; border-top: 1px solid rgba(0,0,0,0.1);">
+        <p class="fs-6 text-muted mb-4">Desde 2017 endulzando momentos especiales con sabor y tradición.</p>
+        <a class="btn btn-danger btn-lg px-4 py-2 fw-medium rounded-pill shadow-sm"
+        href="{% url 'catalogo:catalogo_principal' %}" role="button">
+        <i class="fas fa-gift me-2"></i>Descubrir Productos
+        </a>
+    </div>
+
+    <!-- Categorías destacadas -->
+    <h2 class="text-center mb-4 fw-bold text-dark">Nuestras Categorías</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+        <div class="card categoria-card h-100 rounded-3 overflow-hidden shadow-sm">
+            <div class="overflow-hidden" style="height: 200px;">
+            <img src="{% static 'images/chocolate_negro.jpg' %}" class="card-img-top producto-img" alt="Chocolates" style="object-fit: cover; height: 100%;">
+            </div>
+            <div class="card-body">
+            <h5 class="card-title fw-semibold text-danger">Chocolates</h5>
+            <p class="card-text text-muted small">Deliciosos chocolates artesanales con los más altos estándares de calidad.</p>
+            <a href="{% url 'catalogo:subcatalogo' 'Chocolates' %}" class="btn btn-outline-danger rounded-pill px-3 py-1 btn-sm">
+                <i class="fas fa-eye me-1"></i>Ver productos
             </a>
-        </div>
-
-        <!-- Categorías destacadas -->
-        <h2 class="text-center mb-4 fw-bold text-dark">Nuestras Categorías</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card categoria-card h-100 rounded-xl overflow-hidden">
-                    <div class="overflow-hidden" style="height: 200px;">
-                        <img src="{% static 'images/chocolate_negro.jpg' %}" class="card-img-top producto-img" alt="Chocolates">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold text-primary">Chocolates</h5>
-                        <p class="card-text text-muted">Deliciosos chocolates artesanales con los más altos estándares de calidad.</p>
-                        <a href="{% url 'subcatalogo' 'Chocolates' %}" class="btn btn-outline-primary rounded-pill px-4">
-                            <i class="fas fa-eye me-2"></i>Ver productos
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card categoria-card h-100 rounded-xl overflow-hidden">
-                    <div class="overflow-hidden" style="height: 200px;">
-                        <img src="{% static 'images/alfajor_papaya.jpg' %}" class="card-img-top producto-img" alt="Alfajores">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold text-primary">Alfajores</h5>
-                        <p class="card-text text-muted">Alfajores artesanales con rellenos exquisitos y sabores únicos.</p>
-                        <a href="{% url 'subcatalogo' 'Alfajores' %}" class="btn btn-outline-primary rounded-pill px-4">
-                            <i class="fas fa-eye me-2"></i>Ver productos
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card categoria-card h-100 rounded-xl overflow-hidden">
-                    <div class="overflow-hidden" style="height: 200px;">
-                        <img src="{% static 'images/bombon_champagne.jpg' %}" class="card-img-top producto-img" alt="Bombonería">
-                    </div>
-                    <div class="card-body">
-                        <h5 class="card-title fw-semibold text-primary">Bombonería</h5>
-                        <p class="card-text text-muted">Bombones finos y delicados para ocasiones especiales.</p>
-                        <a href="{% url 'subcatalogo' 'Bombonería' %}" class="btn btn-outline-primary rounded-pill px-4">
-                            <i class="fas fa-eye me-2"></i>Ver productos
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
-
-        <!-- Productos destacados -->
-        <h2 class="text-center mt-5 mb-4 fw-bold text-dark">Productos Destacados</h2>
-        <div class="row">
-            <div class="col-md-4 mb-4">
-                <div class="card elevate h-100">
-                    <img src="https://picsum.photos/400/250?random=1" class="card-img-top producto-img" alt="Producto 1">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Conito de higo</h5>
-                        <p class="card-text text-muted">Un clásico artesanal lleno de sabor y tradición.</p>
-                        <a href="{% url 'catalogo_principal' %}" class="btn btn-outline-primary rounded-pill">Ver más</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card elevate h-100">
-                    <img src="https://picsum.photos/400/250?random=2" class="card-img-top producto-img" alt="Producto 2">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Caja de alfajores</h5>
-                        <p class="card-text text-muted">Perfecta para compartir en familia o regalar.</p>
-                        <a href="{% url 'catalogo_principal' %}" class="btn btn-outline-primary rounded-pill">Ver más</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-4">
-                <div class="card elevate h-100">
-                    <img src="https://picsum.photos/400/250?random=3" class="card-img-top producto-img" alt="Producto 3">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Torta de chocolate</h5>
-                        <p class="card-text text-muted">Súper húmeda, con un sabor irresistible.</p>
-                        <a href="{% url 'catalogo_principal' %}" class="btn btn-outline-primary rounded-pill">Ver más</a>
-                    </div>
-                </div>
-            </div>
         </div>
 
-        <!-- Sección sobre nosotros -->
-        <div class="row mt-5 align-items-center">
-            <div class="col-md-6">
-                <div class="glass-effect p-4 rounded-xl">
-                    <h2 class="fw-bold text-dark mb-3">Nuestra Historia</h2>
-                    <p class="lead text-muted">Lilis Gourmet nació en 2017 como un emprendimiento familiar liderado por Liliana, quien decidió iniciar un negocio de producción de galletas artesanales. Hoy contamos con una planta de más de 450 m² y distribución nacional e internacional.</p>
-                    <a href="{% url 'informacion_empresa' %}" class="btn btn-primary rounded-pill px-4 py-2 mt-3">
-                        <i class="fas fa-history me-2"></i>Conoce nuestra historia
-                    </a>
-                </div>
+        <div class="col-md-4 mb-4">
+        <div class="card categoria-card h-100 rounded-3 overflow-hidden shadow-sm">
+            <div class="overflow-hidden" style="height: 200px;">
+            <img src="{% static 'images/alfajor_papaya.jpg' %}" class="card-img-top producto-img" alt="Alfajores" style="object-fit: cover; height: 100%;">
             </div>
-            <div class="col-md-6">
-                <div class="rounded-xl overflow-hidden shadow-soft" style="max-height: 300px;">
-                    <img src="{% static 'images/empresa_lilis.jpg' %}" class="img-fluid w-100" alt="Nuestra fábrica" style="height: 100%; object-fit: cover;">
-                </div>
+            <div class="card-body">
+            <h5 class="card-title fw-semibold text-danger">Alfajores</h5>
+            <p class="card-text text-muted small">Alfajores artesanales con rellenos exquisitos y sabores únicos.</p>
+            <a href="{% url 'catalogo:subcatalogo' 'Alfajores' %}" class="btn btn-outline-danger rounded-pill px-3 py-1 btn-sm">
+                <i class="fas fa-eye me-1"></i>Ver productos
+            </a>
             </div>
+        </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+        <div class="card categoria-card h-100 rounded-3 overflow-hidden shadow-sm">
+            <div class="overflow-hidden" style="height: 200px;">
+            <img src="{% static 'images/bombon_champagne.jpg' %}" class="card-img-top producto-img" alt="Bombonería" style="object-fit: cover; height: 100%;">
+            </div>
+            <div class="card-body">
+            <h5 class="card-title fw-semibold text-danger">Bombonería</h5>
+            <p class="card-text text-muted small">Bombones finos y delicados para ocasiones especiales.</p>
+            <a href="{% url 'catalogo:subcatalogo' 'Bombonería' %}" class="btn btn-outline-danger rounded-pill px-3 py-1 btn-sm">
+                <i class="fas fa-eye me-1"></i>Ver productos
+            </a>
+            </div>
+        </div>
         </div>
     </div>
+
+    <!-- Productos destacados -->
+    <h2 class="text-center mt-5 mb-4 fw-bold text-dark">Productos Destacados</h2>
+    <div class="row">
+        <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 rounded-3">
+            <img src="{% static 'images/cuchufil_chocolate.jpg' %}" class="card-img-top producto-img" alt="Producto 1" style="height: 200px; object-fit: cover;">
+            <div class="card-body text-center">
+            <h5 class="card-title">Cuchuflí Artesanal</h5>
+            <p class="card-text text-muted small">Relleno de manjar y bañado en chocolate.</p>
+            <a href="{% url 'catalogo:catalogo_principal' %}" class="btn btn-outline-danger rounded-pill btn-sm">Ver más</a>
+            </div>
+        </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 rounded-3">
+            <img src="{% static 'images/alfajor_nuez.jpg' %}" class="card-img-top producto-img" alt="Producto 2" style="height: 200px; object-fit: cover;">
+            <div class="card-body text-center">
+            <h5 class="card-title">Alfajor de Nuez</h5>
+            <p class="card-text text-muted small">Perfecto para compartir o regalar.</p>
+            <a href="{% url 'catalogo:catalogo_principal' %}" class="btn btn-outline-danger rounded-pill btn-sm">Ver más</a>
+            </div>
+        </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+        <div class="card shadow-sm h-100 rounded-3">
+            <img src="{% static 'images/chocolate_mani.jpg' %}" class="card-img-top producto-img" alt="Producto 3" style="height: 200px; object-fit: cover;">
+            <div class="card-body text-center">
+            <h5 class="card-title">Chocolate con Maní</h5>
+            <p class="card-text text-muted small">Irresistible combinación crocante.</p>
+            <a href="{% url 'catalogo:catalogo_principal' %}" class="btn btn-outline-danger rounded-pill btn-sm">Ver más</a>
+            </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Sección sobre nosotros -->
+    <div class="row mt-5 align-items-center bg-light p-4 rounded-3 shadow-sm">
+        <div class="col-md-6">
+        <h2 class="fw-bold text-dark mb-3">Nuestra Historia</h2>
+        <p class="text-muted">
+            Lilis Gourmet nació en 2017 como un emprendimiento familiar liderado por Liliana, quien decidió iniciar un negocio de producción de galletas artesanales. Hoy contamos con una planta de más de 450 m² y distribución nacional e internacional.
+        </p>
+        <a href="{% url 'informacion_empresa' %}" class="btn btn-danger rounded-pill px-4 py-2 mt-3">
+            <i class="fas fa-history me-2"></i>Conoce más
+        </a>
+        </div>
+        <div class="col-md-6 mt-3 mt-md-0">
+        <div class="rounded-3 overflow-hidden shadow-sm">
+            <img src="{% static 'images/empresa_lilis.jpg' %}" class="img-fluid w-100" alt="Nuestra fábrica" style="max-height: 250px; object-fit: cover;">
+        </div>
+        </div>
+    </div>
+    </div>
+</div>
 </div>
 {% endblock %}

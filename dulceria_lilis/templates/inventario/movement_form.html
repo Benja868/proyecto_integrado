@@ -1,0 +1,66 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Registrar Movimiento de Inventario</h2>
+
+    <form method="POST" class="card p-4 mt-4 shadow-sm">
+        {% csrf_token %}
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <ul class="nav nav-tabs" id="movimientoTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="datos-tab" data-bs-toggle="tab" data-bs-target="#datos" type="button" role="tab">1. Datos del Movimiento</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="control-tab" data-bs-toggle="tab" data-bs-target="#control" type="button" role="tab">2. Control Avanzado</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="referencias-tab" data-bs-toggle="tab" data-bs-target="#referencias" type="button" role="tab">3. Referencias/Obs.</button>
+            </li>
+        </ul>
+
+        <div class="tab-content pt-3">
+            <div class="tab-pane fade show active" id="datos" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-md-4">{{ form.timestamp.label_tag }} {{ form.timestamp }} {{ form.timestamp.errors }}</div>
+                    <div class="col-md-4">{{ form.movement_type.label_tag }} {{ form.movement_type }} {{ form.movement_type.errors }}</div>
+                    <div class="col-md-4">{{ form.warehouse.label_tag }} {{ form.warehouse }} {{ form.warehouse.errors }}</div>
+                    <div class="col-md-8">{{ form.product.label_tag }} {{ form.product }} {{ form.product.errors }}</div>
+                    <div class="col-md-2">{{ form.quantity.label_tag }} {{ form.quantity }} {{ form.quantity.errors }}</div>
+                    <div class="col-md-2">{{ form.uom.label_tag }} {{ form.uom }} {{ form.uom.errors }}</div>
+                    <div class="col-md-4">{{ form.unit_cost.label_tag }} {{ form.unit_cost }} {{ form.unit_cost.errors }}</div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="control" role="tabpanel">
+                <p class="text-muted">Ingrese Lote, Serie o Vencimiento si el producto lo requiere.</p>
+                <div class="row g-3">
+                    <div class="col-md-4">{{ form.lot_number.label_tag }} {{ form.lot_number }} {{ form.lot_number.errors }}</div>
+                    <div class="col-md-4">{{ form.serial_number.label_tag }} {{ form.serial_number }} {{ form.serial_number.errors }}</div>
+                    <div class="col-md-4">{{ form.expiry_date.label_tag }} {{ form.expiry_date }} {{ form.expiry_date.errors }}</div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="referencias" role="tabpanel">
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.doc_reference.label_tag }} {{ form.doc_reference }} {{ form.doc_reference.errors }}</div>
+                    <div class="col-md-6">{{ form.supplier.label_tag }} {{ form.supplier }} {{ form.supplier.errors }}</div>
+                    <div class="col-md-12">{{ form.reason.label_tag }} {{ form.reason }} {{ form.reason.errors }}</div>
+                    <div class="col-12">{{ form.observations.label_tag }} {{ form.observations }} {{ form.observations.errors }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-save me-1"></i> Guardar Movimiento
+            </button>
+            <a href="{% url 'inventario:list' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

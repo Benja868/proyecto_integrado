@@ -4,10 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dulcería Lilis - Productos Artesanales</title>
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
     :root {
         --color-primary: #c62828;
@@ -17,26 +19,27 @@
         --color-dark: #7f0000;
         --color-background: #fafafa;
     }
-    
+
     body {
         background-color: var(--color-background);
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
-    
+
+    /* NAVBAR */
     .navbar {
         background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%) !important;
         backdrop-filter: blur(10px);
         box-shadow: 0 4px 20px rgba(198, 40, 40, 0.15);
         padding: 0.8rem 0;
     }
-    
+
     .navbar-brand {
         font-weight: 700;
         font-size: 1.6rem;
         color: white !important;
         text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
-    
+
     .navbar-nav .nav-link {
         color: rgba(255, 255, 255, 0.9) !important;
         font-weight: 500;
@@ -45,13 +48,14 @@
         border-radius: 8px;
         margin: 0 0.2rem;
     }
-    
+
     .navbar-nav .nav-link:hover {
-        color: white !important;
-        background-color: rgba(255, 255, 255, 0.15);
+        color: #fff !important;
+        background-color: rgba(255, 255, 255, 0.18);
         transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(255,255,255,0.15);
     }
-    
+
     .btn-primary {
         background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
         border: none;
@@ -61,13 +65,13 @@
         box-shadow: 0 4px 12px rgba(198, 40, 40, 0.3);
         transition: all 0.3s ease;
     }
-    
+
     .btn-primary:hover {
         background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-dark) 100%);
         transform: translateY(-2px);
         box-shadow: 0 6px 18px rgba(198, 40, 40, 0.4);
     }
-    
+
     .btn-outline-primary {
         color: var(--color-primary);
         border: 2px solid var(--color-primary);
@@ -77,7 +81,7 @@
         background: transparent;
         transition: all 0.3s ease;
     }
-    
+
     .btn-outline-primary:hover {
         background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
         color: white;
@@ -85,7 +89,8 @@
         box-shadow: 0 6px 18px rgba(198, 40, 40, 0.3);
         border-color: transparent;
     }
-    
+
+    /* FOOTER */
     footer {
         background: linear-gradient(135deg, var(--color-dark) 0%, var(--color-accent) 100%);
         color: white;
@@ -93,8 +98,23 @@
         margin-top: 4rem;
         backdrop-filter: blur(10px);
     }
+
+    footer h5 {
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    footer a {
+        color: #fff;
+        transition: color 0.3s ease;
+    }
+
+    footer a:hover {
+        color: #ffebee;
+    }
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
@@ -102,17 +122,19 @@
             <a class="navbar-brand" href="{% url 'home' %}">
                 <i class="fas fa-candy-cane"></i> Dulcería Lilis
             </a>
+
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
+
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'catalogo_principal' %}">Productos</a></li>
+                    <!-- ✅ Corregido con namespace -->
+                    <li class="nav-item"><a class="nav-link" href="{% url 'catalogo:catalogo_principal' %}">Productos</a></li>
                     <li class="nav-item"><a class="nav-link" href="{% url 'informacion_empresa' %}">Nosotros</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contacto">Contacto</a></li>
 
-                    <!-- 🔒 Botones dinámicos -->
                     {% if user.is_authenticated %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'profile' %}">
@@ -146,8 +168,7 @@
 
     <!-- Contenido principal -->
     <main class="container my-4">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
     <!-- Footer -->
@@ -172,7 +193,7 @@
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p>&copy; 2025 Dulcería Lilis. Todos los derechos reservados.</p>
+                <p>&copy; {% now "Y" %} Dulcería Lilis. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>

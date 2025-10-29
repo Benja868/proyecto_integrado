@@ -1,0 +1,65 @@
+{% extends 'base_admin.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{% if is_new %}Crear Nuevo Proveedor{% else %}Editar Proveedor: {{ proveedor.razon_social }}{% endif %}</h2>
+
+    <form method="POST" class="card p-4 mt-4 shadow-sm">
+        {% csrf_token %}
+
+        <ul class="nav nav-tabs" id="proveedorTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="identificacion-tab" data-bs-toggle="tab" data-bs-target="#identificacion" type="button" role="tab">1. Identificación y Contacto</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="direccion-tab" data-bs-toggle="tab" data-bs-target="#direccion" type="button" role="tab">2. Dirección y Comercial</button>
+            </li>
+            </ul>
+
+        <div class="tab-content pt-3">
+            <div class="tab-pane fade show active" id="identificacion" role="tabpanel">
+                <h5>Identificación Legal y Contacto</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">{{ form.rut_nif.label_tag }} {{ form.rut_nif }} {{ form.rut_nif.errors }}</div>
+                    <div class="col-md-8">{{ form.razon_social.label_tag }} {{ form.razon_social }} {{ form.razon_social.errors }}</div>
+                    <div class="col-md-12">{{ form.nombre_fantasia.label_tag }} {{ form.nombre_fantasia }} {{ form.nombre_fantasia.errors }}</div>
+                    <div class="col-md-6">{{ form.email.label_tag }} {{ form.email }} {{ form.email.errors }}</div>
+                    <div class="col-md-6">{{ form.telefono.label_tag }} {{ form.telefono }} {{ form.telefono.errors }}</div>
+                    <div class="col-md-12">{{ form.sitio_web.label_tag }} {{ form.sitio_web }} {{ form.sitio_web.errors }}</div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="direccion" role="tabpanel">
+                <h5>Dirección</h5>
+                <div class="row g-3">
+                    <div class="col-12">{{ form.direccion.label_tag }} {{ form.direccion }} {{ form.direccion.errors }}</div>
+                    <div class="col-md-6">{{ form.ciudad.label_tag }} {{ form.ciudad }} {{ form.ciudad.errors }}</div>
+                    <div class="col-md-6">{{ form.pais.label_tag }} {{ form.pais }} {{ form.pais.errors }}</div>
+                </div>
+                <hr class="my-4">
+                <h5>Comercial</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">{{ form.condiciones_pago.label_tag }} {{ form.condiciones_pago }} {{ form.condiciones_pago.errors }}</div>
+                    <div class="col-md-6">{{ form.moneda.label_tag }} {{ form.moneda }} {{ form.moneda.errors }}</div>
+                    <div class="col-md-4">{{ form.contacto_principal_nombre.label_tag }} {{ form.contacto_principal_nombre }} {{ form.contacto_principal_nombre.errors }}</div>
+                    <div class="col-md-4">{{ form.contacto_principal_email.label_tag }} {{ form.contacto_principal_email }} {{ form.contacto_principal_email.errors }}</div>
+                    <div class="col-md-4">{{ form.contacto_principal_telefono.label_tag }} {{ form.contacto_principal_telefono }} {{ form.contacto_principal_telefono.errors }}</div>
+                    <div class="col-md-6">{{ form.estado.label_tag }} {{ form.estado }} {{ form.estado.errors }}</div>
+                    <div class="col-12">{{ form.observaciones.label_tag }} {{ form.observaciones }} {{ form.observaciones.errors }}</div>
+                </div>
+            </div>
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger mt-3">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <div class="mt-4">
+            <button class="btn btn-primary" type="submit">
+                <i class="fas fa-save me-1"></i> Guardar Proveedor
+            </button>
+            <a href="{% url 'proveedores:list' %}" class="btn btn-secondary">Cancelar</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
