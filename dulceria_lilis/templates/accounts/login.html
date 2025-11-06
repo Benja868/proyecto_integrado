@@ -47,7 +47,7 @@
 
     <!-- Enlaces adicionales -->
     <div class="text-center mt-3">
-        <a href="{% url 'password_reset' %}" class="small text-decoration-none text-muted">
+        <a href="{% url 'password_reset_request' %}" class="small text-decoration-none text-muted">
         ¿Olvidaste tu contraseña?
         </a>
     </div>
@@ -65,4 +65,35 @@
     </div>
 </div>
 </div>
+
+<!-- ✅ SWEETALERT2 INTEGRADO -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+{% if messages %}
+<div id="django-messages" data-messages='[
+    {% for message in messages %}
+    {"level": "{{ message.tags }}", "text": "{{ message|escapejs }}"}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]'></div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('django-messages');
+    if (container) {
+        const messages = JSON.parse(container.dataset.messages);
+        messages.forEach(msg => {
+            Swal.fire({
+                title: msg.level === 'success' ? '¡Bienvenido!' :
+                    msg.level === 'error' ? 'Error de inicio de sesión' :
+                    msg.level.charAt(0).toUpperCase() + msg.level.slice(1),
+                text: msg.text,
+                icon: msg.level,
+                confirmButtonColor: '#a71f1f',
+                background: '#fff8f8'
+            });
+        });
+    }
+});
+</script>
 {% endblock %}

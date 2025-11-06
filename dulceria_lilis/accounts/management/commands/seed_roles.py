@@ -1,64 +1,53 @@
+# accounts/management/commands/seed_roles.py
 from django.core.management.base import BaseCommand
-from django.contrib.auth.models import Group, User
-from accounts.models import Module, Role, RoleModulePermission, Organization
-from django.db import transaction
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+from django.apps import apps
+
+# Apps donde aplicaremos permisos para el Supervisor (ver/cambiar)
+SUPERVISOR_APPS = [
+    "proveedores",
+    "catalogo",
+    "inventario",
+    "core",       # si quieres que edite compras/ventas/producción/finanzas
+    "usuarios",   # solo ver/cambiar usuarios (no crear/borrar)
+]
 
 class Command(BaseCommand):
-    help = "Crea roles, módulos, permisos y un usuario admin por defecto para Dulcería Lilis"
+    help = "Crea los grupos: Administrador, Supervisor y Operador con sus permisos."
 
-    @transaction.atomic
-    def handle(self, *args, **kwargs):
-        # Crear organización principal
-        org, _ = Organization.objects.get_or_create(name="Dulcería Lilis",)
+    def handle(self, *args, **options):
+        # 1) Administrador
+        admin_group, _ = Group.objects.get_or_create(name="Administrador")
+        all_perms = Permission.objects.all()
+        admin_group.permissions.set(all_perms)
+        self.stdout.write(self.style.SUCCESS("Grupo 'Administrador' => TODOS los permisos."))
 
-        # Crear módulos del sistema
-        modules_data = [
-            {"code": "ventas", "name": "Ventas"},
-            {"code": "stock", "name": "Gestión de Stock"},
-            {"code": "reportes", "name": "Reportes y Estadísticas"},
-        ]
+        # 2) Supervisor: view_* y change_* en las apps listadas
+        supervisor_group, _ = Group.objects.get_or_create(name="Supervisor")
+        supervisor_perms = Permission.objects.none()
 
-        for mod in modules_data:
-            Module.objects.get_or_create(code=mod["code"], defaults={"name": mod["name"]})
+        for app_label in SUPERVISOR_APPS:
+            for model in apps.get_app_config(app_label).get_models():
+                ct = ContentType.objects.get_for_model(model)
+                perms = Permission.objects.filter(content_type=ct, codename__startswith='view_') | \
+                        Permission.objects.filter(content_type=ct, codename__startswith='change_')
+                supervisor_perms = supervisor_perms | perms
 
-        ventas = Module.objects.get(code="ventas")
-        stock = Module.objects.get(code="stock")
-        reportes = Module.objects.get(code="reportes")
+        supervisor_group.permissions.set(supervisor_perms.distinct())
+        self.stdout.write(self.style.SUCCESS("Grupo 'Supervisor' => view_* y change_* en apps configuradas."))
 
-        # Crear roles (grupos de Django)
-        groups = {
-            "Admin Dulcería": {"modules": [ventas, stock, reportes], "perms": (True, True, True, True)},
-            "Jefe de Ventas": {"modules": [ventas, reportes], "perms": (True, True, True, False)},
-            "Bodeguero": {"modules": [stock], "perms": (True, True, False, False)},
-        }
+        # 3) Operador: puede solo crear usuarios (add_usuario) y ver (view_usuario)
+        operador_group, _ = Group.objects.get_or_create(name="Operador")
+        try:
+            usuario_ct = ContentType.objects.get(app_label="usuarios", model="usuario")
+            add_user_perm = Permission.objects.get(content_type=usuario_ct, codename="add_usuario")
+            view_user_perm = Permission.objects.get(content_type=usuario_ct, codename="view_usuario")
+            operador_group.permissions.set([add_user_perm, view_user_perm])
+            self.stdout.write(self.style.SUCCESS("Grupo 'Operador' => add_usuario, view_usuario."))
+        except ContentType.DoesNotExist:
+            self.stdout.write(self.style.ERROR("No se encontró ContentType usuarios.Usuario. Revisa AUTH_USER_MODEL."))
+        except Permission.DoesNotExist:
+            self.stdout.write(self.style.ERROR("No se encontraron permisos add/view para usuarios.Usuario."))
 
-        for name, data in groups.items():
-            group, _ = Group.objects.get_or_create(name=name)
-            role, _ = Role.objects.get_or_create(group=group)
-            for mod in data["modules"]:
-                RoleModulePermission.objects.get_or_create(
-                    role=role,
-                    module=mod,
-                    defaults={
-                        "can_view": data["perms"][0],
-                        "can_add": data["perms"][1],
-                        "can_change": data["perms"][2],
-                        "can_delete": data["perms"][3],
-                    }
-                )
-
-        # Crear usuario administrador
-        if not User.objects.filter(username="adminlilis").exists():
-            admin_user = User.objects.create_superuser(
-                username="adminlilis",
-                email="admin@lilis.com",
-                password="admin123",
-                first_name="Administrador",
-                last_name="Lilis",
-            )
-            admin_user.groups.add(Group.objects.get(name="Admin Dulcería"))
-            self.stdout.write(self.style.SUCCESS("👤 Usuario administrador creado correctamente."))
-        else:
-            self.stdout.write(self.style.WARNING("⚠️ Usuario adminlilis ya existe."))
-
-        self.stdout.write(self.style.SUCCESS("✅ Roles, módulos y permisos creados correctamente."))
+        self.stdout.write(self.style.SUCCESS("✔ Roles creados/actualizados con éxito."))

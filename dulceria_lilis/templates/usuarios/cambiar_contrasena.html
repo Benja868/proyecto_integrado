@@ -1,0 +1,32 @@
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Cambiar Contraseña{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+<h2 class="fw-bold text-danger"><i class="fas fa-lock me-2"></i> Cambiar Contraseña</h2>
+<div class="card shadow-sm mt-3 p-4">
+    <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button class="btn btn-danger" type="submit">
+        <i class="fas fa-key me-1"></i> Actualizar Contraseña
+    </button>
+    <a href="{% url 'usuarios:perfil' %}" class="btn btn-secondary">Volver</a>
+    </form>
+</div>
+</div>
+
+{% if form.errors %}
+<script>
+Swal.fire({
+title: 'Error de validación',
+html: `<ul style="text-align:left;">{% for field, errors in form.errors.items %}<li><b>{{ field|title }}:</b> {{ errors|join:", " }}</li>{% endfor %}</ul>`,
+icon: 'error',
+confirmButtonColor: '#a71f1f'
+});
+</script>
+{% endif %}
+
+{% endblock %}
