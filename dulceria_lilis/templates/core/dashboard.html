@@ -1,119 +1,165 @@
 {% extends 'base_admin.html' %}
-{% load humanize %} <!-- Para formatear números con separadores de miles -->
+{% load humanize %}
 
 {% block title %}Dashboard - Dulcería Lilis{% endblock %}
 
 {% block content %}
-<h1 class="mb-4">Panel de Control</h1>
+<div class="container-fluid">
+  <h2 class="mb-4 fw-bold">
+    <i class="fas fa-tachometer-alt me-2 text-danger"></i>Panel de Control
+  </h2>
 
-<!-- ===================== Fila de Indicadores Principales ===================== -->
-<div class="row g-3">
-
-  <!-- === Ventas Hoy === -->
-  <div class="col-lg-3 col-md-6">
-    <div class="card-indicator card-blue text-center mb-3">
-      <h6>Ventas Hoy (#)</h6>
-      <h3 title="{{ ventas_hoy_count }} transacciones">
-        {{ ventas_hoy_count|default:0 }}
-      </h3>
+  <!-- ===================== Indicadores Principales ===================== -->
+  <div class="row g-3">
+    <!-- Ventas Hoy -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <i class="fas fa-cash-register fa-2x text-danger mb-2"></i>
+          <h6 class="text-muted">Ventas Hoy (#)</h6>
+          <h3 class="fw-bold">{{ ventas_hoy_count|default:0|intcomma }}</h3>
+          <p class="text-muted small mb-0">
+            Total: ${{ ventas_hoy_total|default:0|intcomma }}
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="card-indicator card-blue text-center">
-      <h6>Ventas Hoy ($)</h6>
-      <h3 title="${{ ventas_hoy_total|intcomma }}">
-        ${{ ventas_hoy_total|default:0|intcomma }}
-      </h3>
+
+    <!-- Stock -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <i class="fas fa-boxes-stacked fa-2x text-primary mb-2"></i>
+          <h6 class="text-muted">Items en Stock ({{ warehouse_name|default:"Principal" }})</h6>
+          <h3 class="fw-bold">{{ stock_total_items|default:0|intcomma }}</h3>
+          <p class="text-muted small mb-0">Inventario actual</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bajo Stock -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <i class="fas fa-triangle-exclamation fa-2x text-warning mb-2"></i>
+          <h6 class="text-muted">Productos Bajo Mínimo</h6>
+          <h3 class="fw-bold">{{ bajo_stock_count|default:0|intcomma }}</h3>
+          <p class="text-muted small mb-0">{{ warehouse_name|default:"Principal" }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pedidos -->
+    <div class="col-lg-3 col-md-6">
+      <div class="card shadow-sm border-0 text-center">
+        <div class="card-body">
+          <i class="fas fa-truck-loading fa-2x text-success mb-2"></i>
+          <h6 class="text-muted">Pedidos Pendientes</h6>
+          <h3 class="fw-bold">{{ pedidos_pendientes_count|default:"--" }}</h3>
+          <p class="text-muted small mb-0">(Funcionalidad futura)</p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- === Stock === -->
-  <div class="col-lg-3 col-md-6">
-    <div class="card-indicator card-green text-center mb-3">
-      <h6>Items en Stock ({{ warehouse_name|default:'Principal' }})</h6>
-      <h3 title="{{ stock_total_items|floatformat:2 }} unidades en total">
-        {{ stock_total_items|default:0|floatformat:0|intcomma }}
-      </h3>
+  <!-- ===================== Gráficos ===================== -->
+  <div class="row g-3 mt-4">
+    <!-- Gráfico de Ventas -->
+    <div class="col-lg-8">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">
+          <i class="fas fa-chart-line me-2 text-danger"></i>Ventas Últimos 7 Días
+        </div>
+        <div class="card-body">
+          <canvas id="ventasChart" height="120"></canvas>
+        </div>
+      </div>
     </div>
-    <div class="card-indicator card-red text-center">
-      <h6>Productos Bajo Mínimo ({{ warehouse_name|default:'Principal' }})</h6>
-      <h3 title="{{ bajo_stock_count }} productos bajo stock mínimo">
-        {{ bajo_stock_count|default:0 }}
-      </h3>
+
+    <!-- Gráfico de Stock -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-light fw-semibold">
+          <i class="fas fa-chart-pie me-2 text-primary"></i>Stock por Categoría
+        </div>
+        <div class="card-body">
+          <canvas id="stockChart" height="120"></canvas>
+        </div>
+      </div>
     </div>
   </div>
 
-  <!-- === Pedidos y Otros (Placeholders) === -->
-  <div class="col-lg-3 col-md-6">
-    <div class="card-indicator card-yellow text-center mb-3">
-      <h6>Pedidos Pendientes</h6>
-      <h3>{{ pedidos_pendientes_count|default:'--' }}</h3>
-      <small>(Funcionalidad futura)</small>
-    </div>
-    <div class="card-indicator card-secondary text-center">
-      <h6>Clientes Activos</h6>
-      <h3>--</h3>
-      <small>(Conectar con módulo Clientes)</small>
-    </div>
-  </div>
-
-  <!-- === Accesos Rápidos === -->
-  <div class="col-lg-3 col-md-6">
-    <div class="card h-100 shadow-sm">
-      <div class="card-header bg-light fw-bold">
-        Accesos Rápidos
+<!-- ===================== Accesos Rápidos ===================== -->
+<div class="row mt-4">
+  <div class="col-lg-6">
+    <div class="card shadow-sm border-0">
+      <div class="card-header bg-light fw-semibold">
+        <i class="fas fa-bolt text-danger me-2"></i>Accesos Rápidos
       </div>
       <div class="list-group list-group-flush">
-
-        <!-- Enlaces desactivados (futuros módulos) -->
-        <a href="#" class="list-group-item list-group-item-action disabled">
-          <i class="fas fa-cash-register fa-fw me-2 text-primary"></i>Registrar Venta
-        </a>
-        <a href="#" class="list-group-item list-group-item-action disabled">
-          <i class="fas fa-cart-plus fa-fw me-2 text-success"></i>Registrar Compra
-        </a>
-        <a href="#" class="list-group-item list-group-item-action disabled">
-          <i class="fas fa-industry fa-fw me-2 text-info"></i>Registrar Producción
-        </a>
-        <a href="#" class="list-group-item list-group-item-action disabled">
-          <i class="fas fa-exchange-alt fa-fw me-2 text-warning"></i>Registrar Mov. Inventario
-        </a>
-
-        <!-- Enlaces activos -->
         <a href="{% url 'catalogo:product_list' %}" class="list-group-item list-group-item-action">
-          <i class="fas fa-cubes fa-fw me-2 text-secondary"></i>Gestionar Productos
+          <i class="fas fa-cubes text-dark me-2"></i>Gestionar Productos
         </a>
-        <a href="#" class="list-group-item list-group-item-action disabled">
-          <i class="fas fa-truck-field fa-fw me-2 text-dark"></i>Gestionar Proveedores
+        <a href="{% url 'proveedores:list' %}" class="list-group-item list-group-item-action">
+          <i class="fas fa-truck text-secondary me-2"></i>Gestionar Proveedores
         </a>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ===================== Placeholder para gráficos futuros ===================== -->
-<div class="row mt-4 g-3">
+<!-- ===================== Datos JSON seguros ===================== -->
+{{ ventas_labels|json_script:"ventasLabels" }}
+{{ ventas_data|json_script:"ventasData" }}
+{{ stock_labels|json_script:"stockLabels" }}
+{{ stock_data|json_script:"stockData" }}
 
-  <!-- Gráfico Ventas -->
-  <div class="col-md-6">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title mb-3">Ventas Últimos 7 Días (Gráfico)</h5>
-        <p class="text-muted text-center mt-3">
-          -- Integrar librería de gráficos (ej. Chart.js o Plotly) aquí --
-        </p>
-      </div>
-    </div>
-  </div>
+<!-- ===================== Gráficos con Chart.js ===================== -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const ventasLabels = JSON.parse(document.getElementById('ventasLabels').textContent);
+  const ventasData = JSON.parse(document.getElementById('ventasData').textContent);
+  const stockLabels = JSON.parse(document.getElementById('stockLabels').textContent);
+  const stockData = JSON.parse(document.getElementById('stockData').textContent);
 
-  <!-- Gráfico Stock -->
-  <div class="col-md-6">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h5 class="card-title mb-3">Stock por Categoría (Gráfico)</h5>
-        <p class="text-muted text-center mt-3">
-          -- Integrar librería de gráficos (ej. Chart.js o ApexCharts) aquí --
-        </p>
-      </div>
-    </div>
-  </div>
-</div>
+  // === Gráfico de Ventas (Barras) ===
+  new Chart(document.getElementById('ventasChart'), {
+    type: 'bar',
+    data: {
+      labels: ventasLabels.length ? ventasLabels : ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'],
+      datasets: [{
+        label: 'Ventas ($)',
+        data: ventasData.length ? ventasData : [0,0,0,0,0,0,0],
+        backgroundColor: '#a71f1f',
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { color: '#333' } },
+        x: { ticks: { color: '#555' } }
+      }
+    }
+  });
+
+  // === Gráfico de Stock (Dona) ===
+  new Chart(document.getElementById('stockChart'), {
+    type: 'doughnut',
+    data: {
+      labels: stockLabels.length ? stockLabels : ['Sin datos'],
+      datasets: [{
+        data: stockData.length ? stockData : [1],
+        backgroundColor: ['#a71f1f','#ffce56','#4bc0c0','#36a2eb','#9966ff']
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { position: 'bottom' } }
+    }
+  });
+});
+</script>
 {% endblock %}

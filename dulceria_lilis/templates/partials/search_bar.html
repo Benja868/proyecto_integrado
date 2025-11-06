@@ -1,0 +1,17 @@
+<form method="get" class="row g-2 mb-3">
+<div class="col-auto">
+    <input type="text" name="q" value="{{ q|default:'' }}" class="form-control" placeholder="Buscar...">
+</div>
+<div class="col-auto">
+    <button class="btn btn-outline-secondary" type="submit">
+    <i class="fas fa-search"></i> Buscar
+    </button>
+</div>
+{% if q %}
+<div class="col-auto">
+    <a href="?" class="btn btn-outline-danger">
+    <i class="fas fa-times"></i> Limpiar
+    </a>
+</div>
+{% endif %}
+</form>

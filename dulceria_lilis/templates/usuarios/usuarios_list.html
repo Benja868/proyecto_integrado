@@ -1,20 +1,58 @@
-{% extends 'base_admin.html' %}
-{% block title %}Usuarios - Dulcería Lilis{% endblock %}
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Gestión de Usuarios{% endblock %}
+
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-<h2 class="fw-bold text-danger"><i class="fas fa-users me-2"></i>Gestión de Usuarios</h2>
-<a href="{% url 'usuarios:create' %}" class="btn btn-danger">
-    <i class="fas fa-user-plus me-2"></i>Nuevo Usuario
-</a>
+<div class="container-fluid mt-4">
+
+<!-- Encabezado -->
+<div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <h2 class="fw-bold text-danger">
+    <i class="fas fa-users me-2"></i> Gestión de Usuarios
+    <small class="text-muted fs-6">({{ total }} en total)</small>
+    </h2>
+
+    <a href="{% url 'usuarios:create' %}" class="btn btn-danger">
+    <i class="fas fa-plus-circle me-1"></i> Nuevo Usuario
+    </a>
 </div>
 
-<div class="card shadow-sm">
-<div class="card-body">
-    {% if usuarios %}
-    <div class="table-responsive">
-        <table class="table table-hover text-center align-middle">
-        <thead class="table-danger text-dark">
-            <tr>
+<!-- Filtros -->
+<form method="get" class="row g-2 align-items-center mb-3">
+    <div class="col-12 col-md-6">
+    <div class="input-group">
+        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+        <input
+        type="text"
+        name="q"
+        value="{{ q }}"
+        class="form-control"
+        placeholder="Buscar por nombre, correo, rol, teléfono o usuario...">
+    </div>
+    </div>
+
+    <div class="col-6 col-md-3">
+    <select name="page_size" class="form-select" onchange="this.form.submit()">
+        {% for size in page_sizes %}
+        <option value="{{ size }}" {% if size == page_size %}selected{% endif %}>{{ size }} por página</option>
+        {% endfor %}
+    </select>
+    </div>
+
+    <div class="col-6 col-md-3 d-grid">
+    <button class="btn btn-outline-secondary" type="submit">
+        <i class="fas fa-filter me-1"></i> Aplicar
+    </button>
+    </div>
+</form>
+
+<!-- Tabla -->
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+    <table class="table table-hover align-middle mb-0">
+        <thead class="table-danger text-center">
+        <tr>
             <th>ID</th>
             <th>Usuario</th>
             <th>Nombre</th>
@@ -23,42 +61,117 @@
             <th>Rol</th>
             <th>Estado</th>
             <th>Acciones</th>
-            </tr>
+        </tr>
         </thead>
         <tbody>
-            {% for u in usuarios %}
-            <tr>
-                <td>{{ u.id }}</td>
-                <td>{{ u.username }}</td>
-                <td>{{ u.first_name }} {{ u.last_name }}</td>
-                <td>{{ u.email }}</td>
-                <td>{{ u.telefono }}</td>
-                <td>{{ u.get_rol_display }}</td>
-                <td>
-                {% if u.estado %}
-                    <span class="badge bg-success">Activo</span>
-                {% else %}
-                    <span class="badge bg-secondary">Inactivo</span>
-                {% endif %}
-                </td>
-                <td>
-                <a href="{% url 'usuarios:update' u.id %}" class="btn btn-sm btn-outline-primary">
-                    <i class="fas fa-edit"></i>
-                </a>
-                <a href="{% url 'usuarios:delete' u.id %}" class="btn btn-sm btn-outline-danger">
-                    <i class="fas fa-trash-alt"></i>
-                </a>
-                </td>
-            </tr>
-            {% endfor %}
+        {% for u in usuarios %}
+        <tr class="text-center">
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.first_name }} {{ u.last_name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.telefono }}</td>
+            <td>{{ u.get_rol_display }}</td>
+            <td>
+            {% if u.estado %}
+                <span class="badge bg-success">Activo</span>
+            {% else %}
+                <span class="badge bg-secondary">Inactivo</span>
+            {% endif %}
+            </td>
+            <td>
+            <a href="{% url 'usuarios:update' u.id %}" class="btn btn-sm btn-primary me-1">
+                <i class="fas fa-edit"></i>
+            </a>
+            <form action="{% url 'usuarios:delete' u.id %}" method="post" class="d-inline delete-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-danger">
+                <i class="fas fa-trash"></i>
+                </button>
+            </form>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="8" class="text-center text-muted py-3">
+            <i class="fas fa-info-circle me-1"></i> No hay usuarios registrados.
+            </td>
+        </tr>
+        {% endfor %}
         </tbody>
-        </table>
+    </table>
     </div>
-    {% else %}
-    <div class="alert alert-info text-center mb-0">
-        <i class="fas fa-info-circle me-2"></i>No hay usuarios registrados.
+
+    <!-- Paginación -->
+    {% if usuarios.paginator.num_pages > 1 %}
+    <div class="card-footer bg-white d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+    <div class="text-muted small">
+        Página {{ usuarios.number }} de {{ usuarios.paginator.num_pages }}
+    </div>
+    <nav>
+        <ul class="pagination mb-0">
+        {% if usuarios.has_previous %}
+        <li class="page-item">
+            <a class="page-link"
+            href="?page={{ usuarios.previous_page_number }}&page_size={{ page_size }}{% if q %}&q={{ q|urlencode }}{% endif %}">
+            «
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">«</span></li>
+        {% endif %}
+
+        {% for num in usuarios.paginator.page_range %}
+            {% if num >= usuarios.number|add:-2 and num <= usuarios.number|add:2 %}
+            {% if num == usuarios.number %}
+                <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+            {% else %}
+                <li class="page-item">
+                <a class="page-link"
+                    href="?page={{ num }}&page_size={{ page_size }}{% if q %}&q={{ q|urlencode }}{% endif %}">
+                    {{ num }}
+                </a>
+                </li>
+            {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {% if usuarios.has_next %}
+        <li class="page-item">
+            <a class="page-link"
+            href="?page={{ usuarios.next_page_number }}&page_size={{ page_size }}{% if q %}&q={{ q|urlencode }}{% endif %}">
+            »
+            </a>
+        </li>
+        {% else %}
+        <li class="page-item disabled"><span class="page-link">»</span></li>
+        {% endif %}
+        </ul>
+    </nav>
     </div>
     {% endif %}
 </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.querySelectorAll('.delete-form').forEach(form => {
+form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    Swal.fire({
+    title: '¿Eliminar usuario?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#a71f1f'
+    }).then((result) => {
+    if (result.isConfirmed) this.submit();
+    });
+});
+});
+</script>
 {% endblock %}

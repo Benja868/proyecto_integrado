@@ -1,142 +1,300 @@
-<!-- templates/base_admin.html -->
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{% block title %}Panel - Dulcería Lilis{% endblock %}</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{% block title %}Panel - Dulcería Lilis{% endblock %}</title>
 
-    <!-- CSS (Bootstrap, FontAwesome, Google Font) -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Bootstrap, FontAwesome y Fuente -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 
-    {% load static %}
-    <style>
-        body { min-height: 100vh; font-family: 'Poppins', sans-serif; background-color: #f8f9fa; }
-        .sidebar { width: 230px; background: #a71f1f; color: #fff; min-height: 100vh; position: fixed; top: 0; left: 0; box-shadow: 2px 0 8px rgba(0,0,0,0.2); z-index: 1000; display: flex; flex-direction: column; }
-        .sidebar-sticky { height: 100vh; overflow-y: auto; display: flex; flex-direction: column; flex-grow: 1; }
-        .sidebar a { color: rgba(255,255,255,0.9); text-decoration: none; display: block; padding: 10px 18px; transition: all 0.2s; font-weight: 500; border-left: 4px solid transparent; font-size: 0.9rem; }
-        .sidebar a:hover { background: rgba(255,255,255,0.1); border-left: 4px solid rgba(255,255,255,0.5); color: #fff; padding-left: 14px; }
-        .sidebar .active { background: rgba(0,0,0,0.2); border-left: 4px solid #fff; font-weight: 600; padding-left: 14px; }
-        .sidebar-header { text-align: center; padding: 20px 15px; border-bottom: 1px solid rgba(255,255,255,0.2); }
-        .sidebar-header img { width: 60px; height: 60px; border-radius: 50%; border: 2px solid #fff; margin-bottom: 8px; background: #fff; object-fit: contain; }
-        .sidebar-header h4 { font-size: 1.1rem; margin-bottom: 0.2rem; font-weight: 600; }
-        .sidebar small.menu-header { padding: 15px 18px 5px; color: rgba(255,255,255,0.6); display: block; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
-        .logout-section { border-top: 1px solid rgba(255,255,255,0.2); padding: 15px; text-align: center; margin-top: auto; }
-        .content { margin-left: 230px; padding: 25px; min-height: 100vh; }
-        .card-indicator { padding: 1rem; border-radius: 0.5rem; color: white; margin-bottom: 1rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .card-blue { background: linear-gradient(135deg, #0d6efd, #0a58ca); }
-        .card-green { background: linear-gradient(135deg, #198754, #146c43); }
-        .card-yellow { background: linear-gradient(135deg, #ffc107, #d9a406); color: #333;}
-        .card-red { background: linear-gradient(135deg, #dc3545, #b02a37); }
-        .card-secondary { background: linear-gradient(135deg, #6c757d, #5a6268); }
-    </style>
+<style>
+    body {
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background-color: #f8f9fa;
+    overflow-y: auto; 
+    }
+
+    .sidebar {
+    width: 230px;
+    background: #a71f1f;
+    color: #fff;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    }
+
+    .sidebar-sticky {
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255,255,255,0.3) transparent;
+    }
+
+    .sidebar-sticky::-webkit-scrollbar {
+    width: 6px;
+    }
+    .sidebar-sticky::-webkit-scrollbar-thumb {
+    background-color: rgba(255,255,255,0.4);
+    border-radius: 10px;
+    }
+
+    .sidebar a {
+    color: rgba(255,255,255,0.9);
+    text-decoration: none;
+    display: block;
+    padding: 10px 18px;
+    transition: all 0.2s;
+    font-weight: 500;
+    border-left: 4px solid transparent;
+    font-size: 0.9rem;
+    }
+
+    .sidebar a:hover {
+    background: rgba(255,255,255,0.1);
+    border-left: 4px solid rgba(255,255,255,0.5);
+    color: #fff;
+    padding-left: 14px;
+    }
+
+    .sidebar .active {
+    background: rgba(0,0,0,0.2);
+    border-left: 4px solid #fff;
+    font-weight: 600;
+    padding-left: 14px;
+    }
+
+    .sidebar-header {
+    text-align: center;
+    padding: 20px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    }
+
+    .sidebar-header img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    margin-bottom: 8px;
+    background: #fff;
+    object-fit: cover;
+    }
+
+    .sidebar-header h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+    font-weight: 600;
+    }
+
+    .sidebar small.menu-header {
+    padding: 15px 18px 5px;
+    color: rgba(255,255,255,0.6);
+    display: block;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 600;
+    }
+
+    .logout-section {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding: 15px;
+    text-align: center;
+    flex-shrink: 0;
+    }
+
+    .content {
+    margin-left: 230px;
+    padding: 25px;
+    min-height: 100vh;
+    overflow-y: auto;
+    }
+
+    footer {
+    margin-top: 3rem;
+    border-top: 1px solid #ddd;
+    padding-top: 1rem;
+    color: #666;
+    font-size: 0.85rem;
+    text-align: center;
+    }
+</style>
 </head>
+
 <body>
 <div class="sidebar">
-    <div class="sidebar-sticky">
-        <div class="sidebar-header">
-            <img src="{% static 'images/empresa_lilis.jpg' %}" alt="Logo Dulcería Lilis">
-            <h4><i class="fas fa-candy-cane me-2"></i>Dulcería Lilis</h4>
-            <small>Panel de Gestión</small>
-        </div>
-
-        <nav class="sidebar-menu mt-2">
-            {% with request.resolver_match.app_name as app_name %}
-            {% with request.resolver_match.url_name as url_name %}
-
-                <small class="menu-header">Principal</small>
-                <a href="{% url 'dashboard' %}" class="{% if url_name == 'dashboard' %}active{% endif %}">
-                    <i class="fas fa-tachometer-alt fa-fw"></i> Dashboard
-                </a>
-
-                <small class="menu-header mt-3">Inventario</small>
-                <a href="{% url 'inventario:stock_list' %}" class="{% if app_name == 'inventario' and 'stock_list' in url_name %}active{% endif %}">
-                    <i class="fas fa-boxes fa-fw"></i> Stock Actual
-                </a>
-                <a href="{% url 'inventario:list' %}" class="{% if app_name == 'inventario' and url_name == 'list' or url_name == 'create' %}active{% endif %}">
-                    <i class="fas fa-exchange-alt fa-fw"></i> Movimientos
-                </a>
-                <a href="#" class="disabled"><i class="fas fa-warehouse fa-fw"></i> Bodegas</a>
-                <a href="#" class="disabled"><i class="fas fa-random fa-fw"></i> Tipos Mov.</a>
-
-                <small class="menu-header mt-3">Operaciones</small>
-                <a href="{% url 'compras' %}" class="{% if url_name == 'compras' %}active{% endif %}">
-                    <i class="fas fa-cart-plus fa-fw"></i> Compras
-                </a>
-                <a href="{% url 'produccion' %}" class="{% if url_name == 'produccion' %}active{% endif %}">
-                    <i class="fas fa-industry fa-fw"></i> Producción
-                </a>
-                <a href="{% url 'ventas' %}" class="{% if url_name == 'ventas' %}active{% endif %}">
-                    <i class="fas fa-cash-register fa-fw"></i> Ventas
-                </a>
-                <a href="{% url 'finanzas' %}" class="{% if url_name == 'finanzas' %}active{% endif %}">
-                    <i class="fas fa-wallet fa-fw"></i> Finanzas
-                </a>
-
-                <small class="menu-header mt-3">Entidades</small>
-                <!-- Reemplazamos Clientes por Usuarios -->
-                <a href="{% url 'usuarios:list' %}" class="{% if app_name == 'usuarios' %}active{% endif %}">
-                    <i class="fas fa-users fa-fw"></i> Usuarios
-                </a>
-                <a href="{% url 'proveedores:list' %}" class="{% if app_name == 'proveedores' %}active{% endif %}">
-                    <i class="fas fa-truck-field fa-fw"></i> Proveedores
-                </a>
-                <a href="{% url 'catalogo:product_list' %}" class="{% if app_name == 'catalogo' and 'product' in url_name %}active{% endif %}">
-                    <i class="fas fa-cubes fa-fw"></i> Productos
-                </a>
-                <a href="#" class="disabled"><i class="fas fa-tags fa-fw"></i> Categorías</a>
-                <a href="#" class="disabled"><i class="fas fa-balance-scale fa-fw"></i> UdM</a>
-
-                <small class="menu-header mt-3">Administración</small>
-                <!-- Eliminamos el enlace viejo de Usuarios -->
-                <a href="#" class="disabled"><i class="fas fa-users-cog fa-fw"></i> Roles (Grupos)</a>
-                <a href="/admin/" target="_blank" title="Acceder al panel de administración avanzado de Django">
-                    <i class="fas fa-cogs fa-fw"></i> Admin Django
-                </a>
-
-            {% endwith %}
-            {% endwith %}
-        </nav>
-
-        <div class="logout-section">
-            {% if user.is_authenticated %}
-                <div class="small mb-1">Conectado como:</div>
-                <strong>{{ user.get_full_name|default:user.username }}</strong>
-                <form method="post" action="{% url 'logout' %}" class="mt-2">
-                    {% csrf_token %}
-                    <button class="btn btn-outline-light btn-sm" type="submit">
-                        <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
-                    </button>
-                </form>
-            {% else %}
-                <a class="btn btn-light btn-sm w-100" href="{% url 'login' %}">
-                    <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
-                </a>
-            {% endif %}
-        </div>
+<div class="sidebar-sticky">
+    <div class="sidebar-header">
+    {% if user.avatar %}
+        <img src="{{ user.avatar.url }}" alt="Avatar" class="shadow-sm">
+    {% else %}
+        <img src="{% static 'images/empresa_lilis.jpg' %}" alt="Logo Dulcería Lilis" class="shadow-sm">
+    {% endif %}
+    <h4><i class="fas fa-candy-cane me-2"></i>Dulcería Lilis</h4>
+    <small>Panel de Gestión</small>
+    <small class="text-light d-block mt-1">Rol: {{ user.rol|title }}</small>
+    <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-light btn-sm mt-2 w-100">
+        <i class="fas fa-user-cog me-1"></i> Editar Perfil
+    </a>
     </div>
-</div>
 
-<div class="content">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show my-2 shadow-sm" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
-            </div>
-        {% endfor %}
+    <nav class="sidebar-menu mt-2">
+    {% with request.resolver_match.app_name as app_name %}
+    {% with request.resolver_match.url_name as url_name %}
+
+    <!-- PRINCIPAL -->
+    <small class="menu-header">Principal</small>
+    <a href="{% url 'dashboard' %}" class="{% if url_name == 'dashboard' %}active{% endif %}">
+        <i class="fas fa-tachometer-alt fa-fw"></i> Dashboard
+    </a>
+
+    <!-- INVENTARIO -->
+    {% if user.rol == 'admin' or user.rol == 'supervisor' %}
+    <small class="menu-header mt-3">Inventario</small>
+    <a href="{% url 'inventario:stock_list' %}" class="{% if app_name == 'inventario' and 'stock_list' in url_name %}active{% endif %}">
+        <i class="fas fa-boxes fa-fw"></i> Stock Actual
+    </a>
+    <a href="{% url 'inventario:list' %}" class="{% if app_name == 'inventario' and url_name == 'list' or url_name == 'create' %}active{% endif %}">
+        <i class="fas fa-exchange-alt fa-fw"></i> Movimientos
+    </a>
     {% endif %}
 
-    {% block content %}{% endblock %}
+    <!-- OPERACIONES -->
+    {% if user.rol == 'admin' or user.rol == 'supervisor' %}
+    <small class="menu-header mt-3">Operaciones</small>
+    <a href="{% url 'compras' %}" class="{% if url_name == 'compras' %}active{% endif %}">
+        <i class="fas fa-cart-plus fa-fw"></i> Compras
+    </a>
+    <a href="{% url 'produccion' %}" class="{% if url_name == 'produccion' %}active{% endif %}">
+        <i class="fas fa-industry fa-fw"></i> Producción
+    </a>
+    <a href="{% url 'ventas' %}" class="{% if url_name == 'ventas' %}active{% endif %}">
+        <i class="fas fa-cash-register fa-fw"></i> Ventas
+    </a>
+    <a href="{% url 'finanzas' %}" class="{% if url_name == 'finanzas' %}active{% endif %}">
+        <i class="fas fa-wallet fa-fw"></i> Finanzas
+    </a>
+    {% endif %}
 
-    <footer class="mt-5 text-center text-muted small pt-3 border-top">
-        &copy; {% now "Y" %} Dulcería Lilis. Panel de Gestión.
-    </footer>
+    <!-- ENTIDADES -->
+    <small class="menu-header mt-3">Entidades</small>
+    <a href="{% url 'usuarios:list' %}" class="{% if app_name == 'usuarios' %}active{% endif %}">
+        <i class="fas fa-users fa-fw"></i> Usuarios
+    </a>
+    <a href="{% url 'proveedores:list' %}" class="{% if app_name == 'proveedores' %}active{% endif %}">
+        <i class="fas fa-truck-field fa-fw"></i> Proveedores
+    </a>
+    <a href="{% url 'catalogo:product_list' %}" class="{% if app_name == 'catalogo' and 'product' in url_name %}active{% endif %}">
+        <i class="fas fa-cubes fa-fw"></i> Productos
+    </a>
+
+    <!-- ADMINISTRACIÓN -->
+    {% if user.rol == 'admin' %}
+    <small class="menu-header mt-3">Administración</small>
+    <a href="#" class="disabled"><i class="fas fa-users-cog fa-fw"></i> Roles (Grupos)</a>
+    <a href="/admin/" target="_blank" title="Acceder al panel avanzado de Django">
+        <i class="fas fa-cogs fa-fw"></i> Admin Django
+    </a>
+    {% endif %}
+
+    {% endwith %}
+    {% endwith %}
+    </nav>
+
+    <!-- CIERRE DE SESIÓN -->
+    <div class="logout-section">
+    {% if user.is_authenticated %}
+        <div class="small mb-1">Conectado como:</div>
+        <strong>{{ user.get_full_name|default:user.username }}</strong>
+        <form method="post" action="{% url 'logout' %}" class="mt-2">
+        {% csrf_token %}
+        <button class="btn btn-outline-light btn-sm" type="submit">
+            <i class="fas fa-sign-out-alt me-1"></i> Cerrar sesión
+        </button>
+        </form>
+    {% else %}
+        <a class="btn btn-light btn-sm w-100" href="{% url 'login' %}">
+        <i class="fas fa-sign-in-alt me-1"></i> Iniciar sesión
+        </a>
+    {% endif %}
+    </div>
+</div>
 </div>
 
+<!-- CONTENIDO -->
+<div class="content">
+{% block content %}{% endblock %}
+<footer>
+    &copy; {% now "Y" %} Dulcería Lilis. Panel de Gestión.
+</footer>
+</div>
+
+<!-- JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- SweetAlert mensajes globales + errores personalizados -->
+{% if messages %}
+<div id="django-messages" data-messages='[
+    {% for message in messages %}
+    {"level": "{{ message.tags }}", "text": "{{ message|escapejs }}"}{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]'></div>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 🔔 Mensajes globales de Django
+    const container = document.getElementById('django-messages');
+    if (container) {
+        try {
+            const messages = JSON.parse(container.dataset.messages);
+            messages.forEach(msg => {
+                Swal.fire({
+                    title: msg.level.charAt(0).toUpperCase() + msg.level.slice(1),
+                    text: msg.text,
+                    icon: msg.level,
+                    confirmButtonColor: '#a71f1f',
+                    confirmButtonText: 'Aceptar'
+                });
+            });
+        } catch (e) {
+            console.warn("Error al procesar mensajes SweetAlert:", e);
+        }
+    }
+
+    // 🚨 Detección automática de errores 403 / 404 según el título de la página
+    const title = document.title.toLowerCase();
+
+    if (title.includes("403") || title.includes("denegado")) {
+        Swal.fire({
+            title: "Acceso restringido",
+            text: "No tienes permiso para acceder a esta sección o realizar esta acción.",
+            icon: "warning",
+            confirmButtonColor: "#a71f1f",
+            confirmButtonText: "Entendido"
+        });
+    } else if (title.includes("404") || title.includes("no encontrada") || title.includes("no encontrado")) {
+        Swal.fire({
+            title: "Página no encontrada",
+            text: "La página solicitada no existe o fue movida.",
+            icon: "error",
+            confirmButtonColor: "#a71f1f",
+            confirmButtonText: "Regresar"
+        });
+    }
+});
+</script>
+
 {% block extra_js %}{% endblock %}
-</body>
-</html>
