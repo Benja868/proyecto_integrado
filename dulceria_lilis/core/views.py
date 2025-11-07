@@ -194,14 +194,15 @@ def dashboard(request):
 
     return render(request, 'core/dashboard.html', ctx)
 
+
+# ===============================================================
+# =================== VISTAS CON ORDEN Y BÚSQUEDA ===============
+# ===============================================================
 @login_required
 def compras(request):
-    # Form de alta
-    initial_data = {}
-    if request.method == 'GET':
-        initial_data['fecha_compra'] = timezone.now().date()
-    form = CompraForm(request.POST or None, initial=initial_data)
+    form = CompraForm(request.POST or None, initial={'fecha_compra': timezone.now().date()})
 
+    # --- Registrar compra ---
     if request.method == 'POST' and form.is_valid():
         try:
             with transaction.atomic():
@@ -212,10 +213,6 @@ def compras(request):
                 compra.save()
 
                 warehouse, _, _ = _get_or_create_default_data()
-                if not warehouse:
-                    raise ValueError("Bodega por defecto no encontrada")
-
-                # OJO: 'compra.producto' debe ser un Product de catálogo con uom_sale
                 _create_inventory_movement(
                     mvt_type_code='INGRESO_COMPRA',
                     product=compra.producto,
@@ -228,45 +225,30 @@ def compras(request):
                 )
                 messages.success(request, 'Compra registrada y stock actualizado.')
                 return redirect('compras')
-        except (IntegrityError, ValueError) as e:
-            messages.error(request, f'Error al registrar la compra: {e}')
         except Exception as e:
-            messages.error(request, f'Error inesperado al registrar compra: {e}')
-    elif request.method == 'POST':
-        messages.error(request, 'Corrige los errores en el formulario.')
+            messages.error(request, f'Error al registrar la compra: {e}')
 
-    # Listado con buscador + paginación
-    mix = BusquedaPaginacionMixin(
-        request,
-        search_fields=["producto__nombre", "proveedor__razon_social", "doc_referencia"],
-        paginate_by=10
-    )
-    compras_qs = mix.aplicar(
-        Compra.objects.select_related('producto', 'proveedor').all().order_by('-fecha_compra')
-    )
+    # --- Búsqueda + Orden + Paginación ---
+    q = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '-fecha_compra')
+
+    mix = BusquedaPaginacionMixin(request, search_fields=["producto__nombre", "proveedor__razon_social", "doc_referencia"], paginate_by=10)
+    compras_qs = mix.aplicar(Compra.objects.select_related('producto', 'proveedor').all().order_by(sort_by))
 
     return render(request, 'core/compras.html', {
-        'form': form,
-        'page_obj': compras_qs,
-        'q': request.GET.get('q', ''),
+        'form': form, 'page_obj': compras_qs, 'q': q, 'sort_by': sort_by
     })
 
 
 @login_required
 def produccion(request):
-    initial_data = {}
-    if request.method == 'GET':
-        initial_data['fecha_produccion'] = timezone.now().date()
-    form = ProduccionForm(request.POST or None, initial=initial_data)
+    form = ProduccionForm(request.POST or None, initial={'fecha_produccion': timezone.now().date()})
 
     if request.method == 'POST' and form.is_valid():
         try:
             with transaction.atomic():
                 prod = form.save()
                 warehouse, _, _ = _get_or_create_default_data()
-                if not warehouse:
-                    raise ValueError("Bodega por defecto no encontrada")
-
                 _create_inventory_movement(
                     mvt_type_code='INGRESO_PRODUCCION',
                     product=prod.producto,
@@ -276,44 +258,27 @@ def produccion(request):
                 )
                 messages.success(request, 'Producción registrada y stock actualizado.')
                 return redirect('produccion')
-        except (IntegrityError, ValueError) as e:
-            messages.error(request, f'Error al registrar la producción: {e}')
         except Exception as e:
-            messages.error(request, f'Error inesperado al registrar producción: {e}')
-    elif request.method == 'POST':
-        messages.error(request, 'Corrige los errores en el formulario.')
+            messages.error(request, f'Error al registrar la producción: {e}')
 
-    mix = BusquedaPaginacionMixin(
-        request,
-        search_fields=["producto__nombre"],
-        paginate_by=10
-    )
-    producciones = mix.aplicar(
-        Produccion.objects.select_related('producto').all().order_by('-fecha_produccion')
-    )
+    q = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '-fecha_produccion')
 
-    return render(request, 'core/produccion.html', {
-        'form': form,
-        'page_obj': producciones,
-        'q': request.GET.get('q', ''),
-    })
+    mix = BusquedaPaginacionMixin(request, search_fields=["producto__nombre"], paginate_by=10)
+    producciones = mix.aplicar(Produccion.objects.select_related('producto').all().order_by(sort_by))
+
+    return render(request, 'core/produccion.html', {'form': form, 'page_obj': producciones, 'q': q, 'sort_by': sort_by})
 
 
 @login_required
 def ventas(request):
-    initial_data = {}
-    if request.method == 'GET':
-        initial_data['fecha_venta'] = timezone.now().date()
-    form = VentaForm(request.POST or None, initial=initial_data)
+    form = VentaForm(request.POST or None, initial={'fecha_venta': timezone.now().date()})
 
     if request.method == 'POST' and form.is_valid():
         try:
             with transaction.atomic():
                 venta = form.save()
                 warehouse, _, _ = _get_or_create_default_data()
-                if not warehouse:
-                    raise ValueError("Bodega por defecto no encontrada")
-
                 _create_inventory_movement(
                     mvt_type_code='SALIDA_VENTA',
                     product=venta.producto,
@@ -324,69 +289,46 @@ def ventas(request):
                 )
                 messages.success(request, 'Venta registrada y stock actualizado.')
                 return redirect('ventas')
-        except IntegrityError:
-            messages.error(request, 'Error: Stock insuficiente para el producto.')
-        except ValueError as e:
-            messages.error(request, f'Error al registrar la venta: {e}')
         except Exception as e:
-            messages.error(request, f'Error inesperado al registrar venta: {e}')
-    elif request.method == 'POST':
-        messages.error(request, 'Corrige los errores en el formulario.')
+            messages.error(request, f'Error al registrar la venta: {e}')
 
-    mix = BusquedaPaginacionMixin(
-        request,
-        search_fields=["producto__nombre", "doc_referencia"],
-        paginate_by=10
-    )
-    ventas_qs = mix.aplicar(
-        Venta.objects.select_related('producto').all().order_by('-fecha_venta')
-    )
+    q = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '-fecha_venta')
 
-    return render(request, 'core/ventas.html', {
-        'form': form,
-        'page_obj': ventas_qs,
-        'q': request.GET.get('q', ''),
-    })
+    mix = BusquedaPaginacionMixin(request, search_fields=["producto__nombre", "doc_referencia"], paginate_by=10)
+    ventas_qs = mix.aplicar(Venta.objects.select_related('producto').all().order_by(sort_by))
+
+    return render(request, 'core/ventas.html', {'form': form, 'page_obj': ventas_qs, 'q': q, 'sort_by': sort_by})
 
 
 @login_required
 def finanzas(request):
-    initial_data = {}
-    if request.method == 'GET':
-        initial_data['fecha'] = timezone.now().date()
-    form = FinanzasForm(request.POST or None, initial=initial_data)
+    form = FinanzasForm(request.POST or None, initial={'fecha': timezone.now().date()})
 
-    if request.method == 'POST':
-        if form.is_valid():
-            form.save()
-            messages.success(request, 'Registro financiero guardado.')
-            return redirect('finanzas')
-        else:
-            messages.error(request, 'Corrige los errores en el formulario.')
+    if request.method == 'POST' and form.is_valid():
+        form.save()
+        messages.success(request, 'Registro financiero guardado.')
+        return redirect('finanzas')
 
-    mix = BusquedaPaginacionMixin(
-        request,
-        search_fields=["descripcion"],
-        paginate_by=12
-    )
-    registros_page = mix.aplicar(
-        Finanzas.objects.all().order_by('-fecha')
-    )
+    q = request.GET.get('q', '').strip()
+    sort_by = request.GET.get('sort_by', '-fecha')
+
+    mix = BusquedaPaginacionMixin(request, search_fields=["descripcion"], paginate_by=12)
+    registros_page = mix.aplicar(Finanzas.objects.all().order_by(sort_by))
 
     totals = Finanzas.objects.aggregate(
         total_ingresos=Sum('ingreso', filter=Q(ingreso__isnull=False)),
         total_gastos=Sum('gasto', filter=Q(gasto__isnull=False))
     )
-    total_ingresos = totals.get('total_ingresos', 0) or 0
-    total_gastos = totals.get('total_gastos', 0) or 0
-    balance = total_ingresos - total_gastos
 
-    context = {
+    balance = (totals.get('total_ingresos', 0) or 0) - (totals.get('total_gastos', 0) or 0)
+
+    return render(request, 'core/finanzas.html', {
         'form': form,
         'page_obj': registros_page,
-        'q': request.GET.get('q', ''),
+        'q': q,
+        'sort_by': sort_by,
         'balance': balance,
-        'total_ingresos': total_ingresos,
-        'total_gastos': total_gastos
-    }
-    return render(request, 'core/finanzas.html', context)
+        'total_ingresos': totals.get('total_ingresos', 0) or 0,
+        'total_gastos': totals.get('total_gastos', 0) or 0,
+    })

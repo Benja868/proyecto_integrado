@@ -12,58 +12,51 @@ import openpyxl
 @permission_required('proveedores.view_supplier', raise_exception=True)
 def proveedores_list(request):
     """
-    Listado con:
-    - filtro por texto (nombre, contacto, email, teléfono, dirección)
-    - paginación
-    - tamaño de página recordado en sesión
+    Listado de proveedores con búsqueda, ordenamiento y tamaño de página.
     """
-    # --- 1) Leer query de búsqueda (persistimos en GET, no en sesión) ---
     q = (request.GET.get("q") or "").strip()
+    sort_by = request.GET.get("sort_by", "id")
 
-    # --- 2) Page size recordado en sesión ---
-    # prioridad: GET -> sesión -> default
+    # Control del tamaño de página
     if "page_size" in request.GET:
         try:
             page_size = int(request.GET.get("page_size", "10"))
         except ValueError:
             page_size = 10
-        # normalizar opciones válidas
         if page_size not in (5, 10, 15, 30, 50, 100):
             page_size = 10
         request.session["proveedores_page_size"] = page_size
     else:
         page_size = int(request.session.get("proveedores_page_size", 10))
 
-    # --- 3) Construir queryset filtrado ---
-    qs = Supplier.objects.all().order_by("id")
+    # Filtro de búsqueda y orden
+    proveedores = Supplier.objects.all().order_by(sort_by)
     if q:
-        qs = qs.filter(
-        Q(razon_social__icontains=q) |
-        Q(nombre_fantasia__icontains=q) |
-        Q(contacto_principal_nombre__icontains=q) |
-        Q(contacto_principal_email__icontains=q) |
-        Q(contacto_principal_telefono__icontains=q) |
-        Q(email__icontains=q) |
-        Q(telefono__icontains=q) |
-        Q(direccion__icontains=q)
-    )
+        proveedores = proveedores.filter(
+            Q(razon_social__icontains=q)
+            | Q(nombre_fantasia__icontains=q)
+            | Q(contacto_principal_nombre__icontains=q)
+            | Q(contacto_principal_email__icontains=q)
+            | Q(email__icontains=q)
+        )
 
-    # --- 4) Paginación ---
-    paginator = Paginator(qs, page_size)
+    # Paginación
+    paginator = Paginator(proveedores, page_size)
     page = request.GET.get("page") or 1
     try:
-        proveedores = paginator.page(page)
+        proveedores_page = paginator.page(page)
     except PageNotAnInteger:
-        proveedores = paginator.page(1)
+        proveedores_page = paginator.page(1)
     except EmptyPage:
-        proveedores = paginator.page(paginator.num_pages)
+        proveedores_page = paginator.page(paginator.num_pages)
 
     context = {
-        "proveedores": proveedores,
+        "proveedores": proveedores_page,
         "q": q,
+        "sort_by": sort_by,
         "page_size": page_size,
         "page_sizes": (5, 10, 15, 30, 50, 100),
-        "total": qs.count(),
+        "total": proveedores.count(),
     }
     return render(request, "proveedores/proveedores_list.html", context)
 

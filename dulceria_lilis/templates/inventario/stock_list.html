@@ -1,37 +1,70 @@
-{% extends 'base_admin.html' %}
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Stock Actual{% endblock %}
 
 {% block content %}
 <div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>Stock Actual por Bodega</h2>
-        <a href="{% url 'inventario:list' %}" class="btn btn-secondary">
-            <i class="fas fa-history me-1"></i> Ver Movimientos
-        </a>
+
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+    <h2 class="fw-bold text-danger"><i class="fas fa-boxes me-2"></i> Stock Actual
+      <small class="text-muted fs-6">({{ total }} productos con stock)</small>
+    </h2>
+  </div>
+
+  <form method="get" class="row g-2 align-items-center mb-3" id="filter-form">
+    <div class="col-md-4">
+      <div class="input-group">
+        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
+        <input id="search-input" type="text" name="q" value="{{ q }}" class="form-control"
+               placeholder="Buscar por producto o bodega...">
+      </div>
     </div>
 
-    <div class="table-responsive">
-        <table class="table table-striped table-hover table-sm">
-            <thead class="table-dark">
-                <tr>
-                    <th>Bodega</th>
-                    <th>Producto (SKU)</th>
-                    <th>Nombre Producto</th>
-                    <th class="text-end">Cantidad Actual</th>
-                    <th>UdM</th> </tr>
-            </thead>
-            <tbody>
-                {% for stock in stocks %}
-                <tr>
-                    <td>{{ stock.warehouse.name }}</td>
-                    <td>{{ stock.product.sku }}</td>
-                    <td>{{ stock.product.name }}</td>
-                    <td class="text-end fw-bold">{{ stock.quantity|floatformat:2 }}</td>
-                    <td>{{ stock.product.uom_sale.code }}</td> </tr>
-                {% empty %}
-                <tr><td colspan="5" class="text-center">No hay stock registrado.</td></tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="col-md-4">
+      <select name="sort_by" class="form-select" onchange="this.form.submit()">
+        <option value="product__name" {% if sort_by == 'product__name' %}selected{% endif %}>Producto A-Z</option>
+        <option value="-product__name" {% if sort_by == '-product__name' %}selected{% endif %}>Producto Z-A</option>
+        <option value="-quantity" {% if sort_by == '-quantity' %}selected{% endif %}>Cantidad Desc</option>
+        <option value="quantity" {% if sort_by == 'quantity' %}selected{% endif %}>Cantidad Asc</option>
+      </select>
     </div>
+  </form>
+
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-danger text-center">
+          <tr>
+            <th>Producto</th>
+            <th>Bodega</th>
+            <th>Cantidad</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for s in page_obj %}
+          <tr class="text-center">
+            <td class="text-start">{{ s.product.name }}</td>
+            <td>{{ s.warehouse.name }}</td>
+            <td>{{ s.quantity }}</td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="3" class="text-center text-muted py-3">No hay stock disponible.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
     </div>
+
+    {% include "core/pagination.html" %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('search-input').addEventListener('keyup', function() {
+  clearTimeout(window.searchTimer);
+  window.searchTimer = setTimeout(() => document.getElementById('filter-form').submit(), 500);
+});
+</script>
 {% endblock %}

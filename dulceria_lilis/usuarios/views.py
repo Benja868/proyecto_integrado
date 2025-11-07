@@ -11,15 +11,16 @@ Usuario = get_user_model()
 
 
 # -----------------------------
-# LISTADO DE USUARIOS
+# LISTADO DE USUARIOS (Mejorado con búsqueda automática + orden dinámico)
 # -----------------------------
 @login_required
 @permission_required('usuarios.view_usuario', raise_exception=True)
 def usuarios_list(request):
     """
-    Listado de usuarios con búsqueda, paginación y tamaño de página guardado en sesión.
+    Listado de usuarios con búsqueda, orden, paginación y tamaño de página guardado en sesión.
     """
     q = (request.GET.get("q") or "").strip()
+    sort_by = request.GET.get("sort_by", "id")
 
     # Control de tamaño de página
     if "page_size" in request.GET:
@@ -33,8 +34,8 @@ def usuarios_list(request):
     else:
         page_size = int(request.session.get("usuarios_page_size", 10))
 
-    # Filtro
-    usuarios = Usuario.objects.all().order_by("id")
+    # Filtro + Orden
+    usuarios = Usuario.objects.all().order_by(sort_by)
     if q:
         usuarios = usuarios.filter(
             Q(username__icontains=q)
@@ -58,11 +59,13 @@ def usuarios_list(request):
     context = {
         "usuarios": usuarios_page,
         "q": q,
+        "sort_by": sort_by,
         "page_size": page_size,
         "page_sizes": (5, 10, 15, 30, 50, 100),
         "total": usuarios.count(),
     }
     return render(request, "usuarios/usuarios_list.html", context)
+
 
 
 # -----------------------------
