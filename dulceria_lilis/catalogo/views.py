@@ -33,21 +33,35 @@ def detalle_producto(request, categoria_slug, producto_slug):
 
 # --- Vistas CRUD para Gestión de Productos ---
 
-class ProductListView(LoginRequiredMixin, ListView):
+class ProductListView(ListView):
     model = Product
-    template_name = 'catalogo/product_list.html'
-    context_object_name = 'productos'
-    paginate_by = 15
+    template_name = "catalogo/productos_list.html"
+    context_object_name = "productos"
+    paginate_by = 10
 
     def get_queryset(self):
-        queryset = super().get_queryset().select_related('category', 'brand').order_by('name')
-        query = self.request.GET.get('q')
-        if query:
-            # CORREGIDO: Usar Q importado
+        queryset = super().get_queryset()
+
+        # --- Búsqueda dinámica ---
+        q = self.request.GET.get("q", "").strip()
+        if q:
             queryset = queryset.filter(
-                Q(name__icontains=query) | Q(sku__icontains=query)
+                Q(nombre__icontains=q) |
+                Q(descripcion__icontains=q) |
+                Q(categoria__nombre__icontains=q)
             )
+
+        # --- Ordenamiento dinámico ---
+        sort_by = self.request.GET.get("sort_by", "id")
+        queryset = queryset.order_by(sort_by)
+
         return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["q"] = self.request.GET.get("q", "")
+        context["sort_by"] = self.request.GET.get("sort_by", "id")
+        return context
 
 class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
