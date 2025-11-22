@@ -6,76 +6,98 @@
 {% block content %}
 <div class="container-fluid mt-4">
 
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
-    <h2 class="fw-bold text-danger"><i class="fas fa-exchange-alt me-2"></i> Movimientos de Inventario
-      <small class="text-muted fs-6">({{ total }} registros)</small>
-    </h2>
-    <a href="{% url 'inventario:create' %}" class="btn btn-danger">
-      <i class="fas fa-plus-circle me-1"></i> Nuevo Movimiento
-    </a>
-  </div>
+    <!-- ENCABEZADO -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
+        <h2 class="fw-bold text-danger">
+            <i class="fas fa-exchange-alt me-2"></i> Movimientos de Inventario
+            <small class="text-muted fs-6">({{ total }} registros)</small>
+        </h2>
 
-  <form method="get" class="row g-2 align-items-center mb-3" id="filter-form">
-    <div class="col-md-4">
-      <div class="input-group">
-        <span class="input-group-text bg-light"><i class="fas fa-search"></i></span>
-        <input id="search-input" type="text" name="q" value="{{ q }}" class="form-control"
-               placeholder="Buscar por producto, tipo, bodega o usuario...">
-      </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'inventario:create' %}" class="btn btn-danger">
+                <i class="fas fa-plus-circle me-1"></i> Nuevo Movimiento
+            </a>
+
+            <a href="{% url 'inventario:exportar_inventario_excel' %}" class="btn btn-success">
+                <i class="fas fa-file-excel me-1"></i> Exportar Excel
+            </a>
+        </div>
     </div>
 
-    <div class="col-md-4">
-      <select name="sort_by" class="form-select" onchange="this.form.submit()">
-        <option value="-id" {% if sort_by == '-id' %}selected{% endif %}>Más reciente</option>
-        <option value="id" {% if sort_by == 'id' %}selected{% endif %}>Más antiguo</option>
-        <option value="product__name" {% if sort_by == 'product__name' %}selected{% endif %}>Producto A-Z</option>
-        <option value="-product__name" {% if sort_by == '-product__name' %}selected{% endif %}>Producto Z-A</option>
-      </select>
-    </div>
-  </form>
+    <!-- BUSCADOR Y ORDEN -->
+    <form method="get" id="filter-form" class="row g-2 align-items-center mb-3">
 
-  <div class="card shadow-sm border-0">
-    <div class="card-body p-0">
-      <table class="table table-hover align-middle mb-0">
-        <thead class="table-danger text-center">
-          <tr>
-            <th>ID</th>
-            <th>Producto</th>
-            <th>Tipo Movimiento</th>
-            <th>Cantidad</th>
-            <th>Bodega</th>
-            <th>Usuario</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for m in page_obj %}
-          <tr class="text-center">
-            <td>{{ m.id }}</td>
-            <td>{{ m.product.name }}</td>
-            <td>{{ m.movement_type.name }}</td>
-            <td>{{ m.quantity }}</td>
-            <td>{{ m.warehouse.name }}</td>
-            <td>{{ m.created_by.username }}</td>
-            <td>{{ m.created_at|date:"d/m/Y H:i" }}</td>
-          </tr>
-          {% empty %}
-          <tr><td colspan="7" class="text-center text-muted py-3">No hay movimientos registrados.</td></tr>
-          {% endfor %}
-        </tbody>
-      </table>
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light">
+                    <i class="fas fa-search"></i>
+                </span>
+                <input id="search-input" type="text" name="q" value="{{ q }}" class="form-control"
+                       placeholder="Buscar por producto, tipo, bodega o usuario...">
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <select name="sort_by" class="form-select" onchange="this.form.submit()">
+                <option value="-id" {% if sort_by == '-id' %}selected{% endif %}>Más reciente</option>
+                <option value="id" {% if sort_by == 'id' %}selected{% endif %}>Más antiguo</option>
+                <option value="product__name" {% if sort_by == 'product__name' %}selected{% endif %}>Producto A-Z</option>
+                <option value="-product__name" {% if sort_by == '-product__name' %}selected{% endif %}>Producto Z-A</option>
+            </select>
+        </div>
+    </form>
+
+    <!-- TABLA -->
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-danger text-center">
+                    <tr>
+                        <th>ID</th>
+                        <th>Producto</th>
+                        <th>Tipo Movimiento</th>
+                        <th>Cantidad</th>
+                        <th>Bodega</th>
+                        <th>Usuario</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in page_obj %}
+                    <tr class="text-center">
+                        <td>{{ m.id }}</td>
+                        <td>{{ m.product.name }}</td>
+                        <td>{{ m.movement_type.name }}</td>
+                        <td>{{ m.quantity }}</td>
+                        <td>{{ m.warehouse.name }}</td>
+                        <td>{{ m.created_by.username }}</td>
+                        <td>{{ m.created_at|date:"d/m/Y H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">
+                            <i class="fas fa-info-circle me-1"></i> No hay movimientos registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- PAGINACIÓN -->
+        {% include "core/pagination.html" %}
     </div>
 
-    {% include "core/pagination.html" %}
-  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
 document.getElementById('search-input').addEventListener('keyup', function() {
-  clearTimeout(window.searchTimer);
-  window.searchTimer = setTimeout(() => document.getElementById('filter-form').submit(), 500);
+    clearTimeout(window.searchTimer);
+    window.searchTimer = setTimeout(() => {
+        document.getElementById('filter-form').submit();
+    }, 500);
 });
 </script>
 {% endblock %}

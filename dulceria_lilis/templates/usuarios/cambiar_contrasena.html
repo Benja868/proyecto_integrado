@@ -4,29 +4,72 @@
 {% block title %}Cambiar Contraseña{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-<h2 class="fw-bold text-danger"><i class="fas fa-lock me-2"></i> Cambiar Contraseña</h2>
-<div class="card shadow-sm mt-3 p-4">
-    <form method="POST">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button class="btn btn-danger" type="submit">
-        <i class="fas fa-key me-1"></i> Actualizar Contraseña
-    </button>
-    <a href="{% url 'usuarios:perfil' %}" class="btn btn-secondary">Volver</a>
-    </form>
-</div>
+<div class="container mt-4" style="max-width: 600px;">
+
+    <!-- Título -->
+    <h2 class="fw-bold text-danger text-center">
+        <i class="fas fa-key me-2"></i> Cambiar Contraseña
+    </h2>
+
+    <!-- Subtítulo si es cambio obligatorio -->
+    {% if request.user.password_must_change %}
+    <div class="alert alert-warning text-center mt-3">
+        <i class="fas fa-exclamation-triangle me-2"></i>
+        Debes cambiar tu contraseña temporal para continuar.
+    </div>
+    {% endif %}
+
+    <!-- Card del formulario -->
+    <div class="card shadow-sm mt-3 border-0">
+        <div class="card-body p-4">
+
+            <form method="POST" novalidate>
+                {% csrf_token %}
+
+                <!-- Render más moderno -->
+                {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="text-danger small mt-1">
+                            <i class="fas fa-times-circle me-1"></i>
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+
+                <!-- Botones -->
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'usuarios:perfil' %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Volver
+                    </a>
+
+                    <button class="btn btn-danger" type="submit">
+                        <i class="fas fa-save me-1"></i> Guardar nueva contraseña
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
 </div>
 
+<!-- SweetAlert para errores del formulario -->
 {% if form.errors %}
 <script>
 Swal.fire({
-title: 'Error de validación',
-html: `<ul style="text-align:left;">{% for field, errors in form.errors.items %}<li><b>{{ field|title }}:</b> {{ errors|join:", " }}</li>{% endfor %}</ul>`,
-icon: 'error',
-confirmButtonColor: '#a71f1f'
+    title: 'Error en el formulario',
+    html: `<ul style="text-align:left;">
+            {% for field, errors in form.errors.items %}
+                <li><b>{{ field|title }}:</b> {{ errors|join:", " }}</li>
+            {% endfor %}
+        </ul>`,
+    icon: 'error',
+    confirmButtonColor: '#a71f1f'
 });
 </script>
 {% endif %}
-
 {% endblock %}

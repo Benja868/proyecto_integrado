@@ -19,7 +19,7 @@
             <div class="col-md-4 mb-4">
                 <div class="card categoria-card h-100">
                     <img src="{% static 'images/' %}{% if categoria == 'Chocolates' %}chocolate_negro.jpg{% elif categoria == 'Galletas' %}galleta_chocolate.jpg{% elif categoria == 'Alfajores' %}alfajor_papaya.jpg{% elif categoria == 'Confitería' %}caluga_manjar_cabra.jpg{% else %}bombon_champagne.jpg{% endif %}" 
-                         class="card-img-top" alt="{{ categoria }}" style="height: 200px; object-fit: cover;">
+                        class="card-img-top" alt="{{ categoria }}" style="height: 200px; object-fit: cover;">
                     <div class="card-body">
                         <h5 class="card-title">{{ categoria }}</h5>
                         <p class="card-text">Explora nuestra selección de {{ categoria|lower }} artesanales.</p>

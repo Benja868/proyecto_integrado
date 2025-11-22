@@ -8,6 +8,8 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from .models import InventoryMovement, InventoryStock
 from .forms import InventoryMovementForm
+from core.utils import export_to_excel
+from .models import InventoryStock
 
 
 # =========================
@@ -126,3 +128,22 @@ def stock_list(request):
         "total": stocks.count(),
     }
     return render(request, "inventario/stock_list.html", context)
+
+
+@login_required
+def exportar_inventario_excel(request):
+    items = InventoryStock.objects.select_related("product", "warehouse").all()
+
+    headers = ["ID", "Producto", "Bodega", "Cantidad", "Última actualización"]
+    data = [
+        [
+            i.id,
+            i.product.name,
+            i.warehouse.name,
+            i.quantity,
+            i.last_updated.strftime("%Y-%m-%d %H:%M")
+        ]
+        for i in items
+    ]
+
+    return export_to_excel(headers, data, "inventario_stock")

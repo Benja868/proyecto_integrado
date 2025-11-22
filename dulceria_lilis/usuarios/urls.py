@@ -11,4 +11,7 @@ urlpatterns = [
     path('eliminar/<int:pk>/', views.usuario_delete, name='delete'),
     path('perfil/', views_perfil.perfil_usuario, name='perfil'),
     path('cambiar-contrasena/', views_perfil.cambiar_contrasena, name='cambiar_contrasena'),
+    path('exportar/', views.exportar_usuarios_excel, name='exportar_usuarios_excel'),
+    path("cambiar-contrasena/", views_perfil.cambiar_contrasena, name="cambiar_contrasena"),
+
 ]

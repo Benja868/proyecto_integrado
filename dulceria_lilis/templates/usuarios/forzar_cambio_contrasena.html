@@ -1,0 +1,25 @@
+{% extends "base_admin.html" %}
+
+{% block title %}Cambiar Contraseña{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 500px;">
+    <div class="card shadow">
+        <div class="card-header bg-danger text-white text-center">
+            <h4>Cambiar contraseña</h4>
+            <small>Debes cambiar tu contraseña para continuar</small>
+        </div>
+
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+
+                <button class="btn btn-danger w-100 mt-3">
+                    Guardar nueva contraseña
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -23,16 +23,32 @@ def perfil_usuario(request):
 
 @login_required
 def cambiar_contrasena(request):
+    usuario = request.user
+
     if request.method == 'POST':
-        form = CustomPasswordChangeForm(request.user, request.POST)
+        form = CustomPasswordChangeForm(usuario, request.POST)
+
         if form.is_valid():
-            user = form.save()
-            update_session_auth_hash(request, user)
+            # Guardar nueva contraseña
+            usuario = form.save()
+
+            # 🔥 APAGAR flag para permitir continuar
+            usuario.password_must_change = False
+            usuario.save()
+
+            # Mantener sesión activa y refrescar datos
+            update_session_auth_hash(request, usuario)
+
             messages.success(request, "Contraseña actualizada correctamente.")
+
+            # 🔥 Redirigir donde quieras: dashboard, perfil, etc.
             return redirect('usuarios:perfil')
+
         else:
             messages.error(request, "Corrige los errores en la contraseña.")
+
     else:
-        form = CustomPasswordChangeForm(request.user)
+        form = CustomPasswordChangeForm(usuario)
 
     return render(request, 'usuarios/cambiar_contrasena.html', {'form': form})
+

@@ -61,12 +61,14 @@ class Product(models.Model):
         return f"{self.name} ({self.sku})"
 
     def clean(self):
-        if self.conversion_factor <= 0:
-            raise ValidationError({'conversion_factor': "El factor de conversión debe ser positivo."})
-        if self.serial_controlled and self.lot_controlled:
-            # Podría permitirse, pero usualmente es uno u otro. Aclarar requerimiento.
-            pass
-        # Añadir más validaciones si es necesario
+        super().clean()
+
+        if self.stock_min is not None and self.stock_max is not None:
+            if self.stock_min > self.stock_max:
+                raise ValidationError({
+                'stock_min': "El stock mínimo no puede ser mayor que el stock máximo.",
+                'stock_max': "El stock máximo debe ser mayor o igual al stock mínimo."
+            })
 
     # Podrías añadir propiedades @property para calcular precios con IVA, etc.
 
