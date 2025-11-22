@@ -8,5 +8,5 @@ urlpatterns = [
     path('', views.movement_list, name='list'),
     path('nuevo/', views.movement_create, name='create'),
     path('stock/', views.stock_list, name='stock_list'),
-    # Añadir URLs para editar/ver movimientos si es necesario
+    path('exportar/', views.exportar_inventario_excel, name='exportar_inventario_excel'),
 ]

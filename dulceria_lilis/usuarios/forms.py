@@ -29,10 +29,19 @@ class UsuarioForm(UserCreationForm):
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
-        if Usuario.objects.filter(email=email).exists():
-            raise ValidationError('Este correo ya está registrado.')
+
+    # 1) Validar vacío
+        if not email:
+            raise ValidationError("Debe ingresar un correo electrónico.")
+
+    # 2) Validar formato
         if not re.match(r'^[\w\.-]+@[\w\.-]+\.\w+$', email):
-            raise ValidationError('Correo electrónico inválido.')
+            raise ValidationError("Correo electrónico inválido.")
+
+    # 3) Validar unicidad
+        if Usuario.objects.filter(email=email).exists():
+            raise ValidationError("Este correo ya está registrado.")
+
         return email
 
     def clean_password2(self):

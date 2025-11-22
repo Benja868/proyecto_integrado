@@ -9,13 +9,13 @@
     
     <!-- Logo y encabezado -->
     <div class="text-center mb-4">
-    <img src="https://cdn-icons-png.flaticon.com/512/2965/2965567.png" 
-        alt="Logo Dulcería" 
-        style="width: 80px; height: 80px; border-radius: 50%; background: #fff; border: 2px solid #a71f1f;">
-    <h3 class="mt-3 fw-bold" style="color: #a71f1f;">
-        <i class="fas fa-candy-cane me-2"></i>Dulcería Lilis
-    </h3>
-    <p class="text-muted mb-0">Panel de gestión</p>
+        <img src="https://cdn-icons-png.flaticon.com/512/2965/2965567.png" 
+            alt="Logo Dulcería" 
+            style="width: 80px; height: 80px; border-radius: 50%; background: #fff; border: 2px solid #a71f1f;">
+        <h3 class="mt-3 fw-bold" style="color: #a71f1f;">
+            <i class="fas fa-candy-cane me-2"></i>Dulcería Lilis
+        </h3>
+        <p class="text-muted mb-0">Panel de gestión</p>
     </div>
 
     <!-- Título del formulario -->
@@ -23,50 +23,67 @@
 
     <!-- Formulario -->
     <form method="post">
-    {% csrf_token %}
-    
-    <div class="mb-3">
-        <label class="form-label fw-semibold" for="id_username">Nombre de usuario</label>
-        <div class="input-group">
-        <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
-        {{ form.username }}
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label class="form-label fw-semibold" for="id_username">Nombre de usuario o Email</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                <input type="text" name="username" id="id_username"
+                    class="form-control" placeholder="Usuario o Email"
+                    required autocomplete="username">
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <label class="form-label fw-semibold" for="id_password">Contraseña</label>
-        <div class="input-group">
-        <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
-        {{ form.password }}
+        <div class="mb-3">
+            <label class="form-label fw-semibold" for="id_password">Contraseña</label>
+            <div class="input-group">
+                <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                <input type="password" name="password" id="id_password"
+                    class="form-control" placeholder="Contraseña"
+                    required autocomplete="current-password">
+            </div>
         </div>
-    </div>
 
-    <button class="btn text-white fw-bold w-100" type="submit" style="background-color: #a71f1f;">
-        <i class="fas fa-sign-in-alt me-1"></i> Entrar
-    </button>
+        <button class="btn text-white fw-bold w-100" type="submit" style="background-color: #a71f1f;">
+            <i class="fas fa-sign-in-alt me-1"></i> Entrar
+        </button>
 
-    <!-- Enlaces adicionales -->
-    <div class="text-center mt-3">
-        <a href="{% url 'password_reset_request' %}" class="small text-decoration-none text-muted">
-        ¿Olvidaste tu contraseña?
-        </a>
-    </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'password_reset_request' %}" class="small text-decoration-none text-muted">
+                ¿Olvidaste tu contraseña?
+            </a>
+        </div>
     </form>
+
+    <!-- === D A T O S   B E T A === -->
+    <div class="mt-4 p-3 border rounded shadow-sm"
+         style="background: #fff4f4; border-left: 4px solid #a71f1f;">
+        <h6 class="fw-bold text-danger mb-2">
+            <i class="fas fa-info-circle me-1"></i> Datos de prueba (BETA)
+        </h6>
+
+        <ul class="list-unstyled small mb-0">
+            <li><strong>Administrador:</strong> Pepe / <code>Inacap12345@</code></li>
+            <li><strong>Supervisor:</strong> Benja / <code>Admin12345+</code></li>
+            <li><strong>Operador:</strong> Juan / <code>Inacap12345@</code></li>
+        </ul>
+    </div>
 
     <hr class="my-4">
 
     <!-- Registro -->
     <div class="text-center">
-    <p class="small mb-0">¿No tienes cuenta?
-        <a href="{% url 'register' %}" class="fw-bold" style="color: #a71f1f;">
-        Regístrate aquí
-        </a>
-    </p>
+        <p class="small mb-0">¿No tienes cuenta?
+            <a href="{% url 'register' %}" class="fw-bold" style="color: #a71f1f;">
+                Regístrate aquí
+            </a>
+        </p>
     </div>
 </div>
 </div>
 
-<!-- ✅ SWEETALERT2 INTEGRADO -->
+<!-- SWEETALERT2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 {% if messages %}
@@ -96,4 +113,5 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
 {% endblock %}

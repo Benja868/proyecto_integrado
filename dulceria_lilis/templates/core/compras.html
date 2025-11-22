@@ -9,6 +9,11 @@
   <!-- Encabezado -->
   <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-3 gap-2">
     <h2 class="fw-bold text-danger"><i class="fas fa-shopping-cart me-2"></i> Compras</h2>
+
+    <!-- 🔥 Botón Exportar Excel -->
+    <a href="{% url 'compras_export' %}" class="btn btn-success">
+      <i class="fas fa-file-excel me-1"></i> Exportar Excel
+    </a>
   </div>
 
   <!-- Formulario nueva compra -->

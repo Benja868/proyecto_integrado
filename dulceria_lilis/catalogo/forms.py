@@ -40,16 +40,13 @@ class ProductForm(forms.ModelForm):
             raise ValidationError("El factor de conversión debe ser positivo.")
         return factor
 
-    # Añadir más validaciones si es necesario
+    def clean(self):
+        cleaned_data = super().clean()
+        stock_min = cleaned_data.get("stock_min")
+        stock_max = cleaned_data.get("stock_max")
 
-    def clean_price(self):
-        price = self.cleaned_data["price"]
-        if price < 0:
-            raise ValidationError("El precio no puede ser negativo.")
-        return price
+        if stock_min is not None and stock_max is not None:
+            if stock_min > stock_max:
+                raise ValidationError("El stock mínimo no puede ser mayor que el stock máximo.")
 
-    def clean_stock(self):
-        stock = self.cleaned_data["stock"]
-        if stock > 1000:
-            raise ValidationError("El stock no puede superar 1000 unidades.")
-        return stock
+        return cleaned_data

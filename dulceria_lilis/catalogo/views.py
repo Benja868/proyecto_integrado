@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.db.models import Q # <<<--- AÑADIR ESTA IMPORTACIÓN
 from .models import Product, Category
 from .forms import ProductForm # Importar el formulario
+from core.utils import export_to_excel
 
 # --- Vistas del Catálogo Público ---
 def catalogo_principal(request):
@@ -30,6 +31,57 @@ def detalle_producto(request, categoria_slug, producto_slug):
         'stock_actual': stock_actual,
     }
     return render(request, 'catalogo/detalle_producto.html', context)
+
+def exportar_productos_excel(request):
+    productos = Product.objects.select_related("category", "brand", "uom_purchase", "uom_sale").all()
+
+    headers = [
+        "SKU", "Nombre", "Descripción", "Categoría", "Marca",
+        "UdM Compra", "UdM Venta",
+        "Factor Conversión", "Costo Estándar", "Precio Venta Base", "IVA %",
+        "Stock Mínimo", "Stock Máximo", "Punto Reorden",
+        "Perecible", "Control Lote", "Control Serie",
+        "Disponible"
+    ]
+
+    data = []
+    for p in productos:
+        data.append([
+            p.sku,
+            p.name,
+            p.description,
+            p.category.name if p.category else "",
+            p.brand.name if p.brand else "",
+            p.uom_purchase.name,
+            p.uom_sale.name,
+            p.conversion_factor,
+            p.standard_cost,
+            p.sale_price,
+            p.tax_rate,
+            p.stock_min,
+            p.stock_max,
+            p.reorder_point,
+            "Sí" if p.is_perishable else "No",
+            "Sí" if p.lot_controlled else "No",
+            "Sí" if p.serial_controlled else "No",
+            "Sí" if p.available else "No",
+        ])
+
+    return export_to_excel(headers, data, "productos")
+
+def exportar_categorias_excel(request):
+    from .models import Categoria
+
+    categorias = Categoria.objects.all()
+
+    headers = ["ID", "Nombre", "Descripción"]
+    data = [
+        [c.id, c.nombre, c.descripcion]
+        for c in categorias
+    ]
+
+    return export_to_excel(headers, data, "categorias")
+
 
 # --- Vistas CRUD para Gestión de Productos ---
 

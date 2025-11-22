@@ -7,6 +7,9 @@ from django.utils import timezone
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, F, Q
 import json
+from openpyxl import Workbook
+from django.http import HttpResponse
+
 
 # Modelos de Core
 from .models import Compra, Venta, Produccion, Finanzas
@@ -115,6 +118,18 @@ def home(request):
 
 @login_required
 def dashboard(request):
+    from decimal import Decimal
+
+    # --- función para convertir Decimals a float ---
+    def decimal_to_float(obj):
+        if isinstance(obj, Decimal):
+            return float(obj)
+        if isinstance(obj, dict):
+            return {k: decimal_to_float(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [decimal_to_float(i) for i in obj]
+        return obj
+
     today = timezone.now().date()
     warehouse_default, _, _ = _get_or_create_default_data()
 
@@ -174,7 +189,7 @@ def dashboard(request):
         .order_by('-total')[:5]
     )
     stock_labels = [s['product__category__name'] or "Sin categoría" for s in stock_por_categoria]
-    stock_data = [s['total'] for s in stock_por_categoria]
+    stock_data = [float(s['total']) for s in stock_por_categoria]
 
     # ========== CONTEXTO ==========
     ctx = {
@@ -185,14 +200,15 @@ def dashboard(request):
         'bajo_stock_count': bajo_stock_count,
         'warehouse_name': warehouse_name,
 
-        # datos JSON para los gráficos
-        'ventas_labels': json.dumps(ventas_labels),
-        'ventas_data': json.dumps(ventas_data),
-        'stock_labels': json.dumps(stock_labels),
-        'stock_data': json.dumps(stock_data),
+        # datos JSON para los gráficos — convertidos a float
+        'ventas_labels': json.dumps(decimal_to_float(ventas_labels)),
+        'ventas_data': json.dumps(decimal_to_float(ventas_data)),
+        'stock_labels': json.dumps(decimal_to_float(stock_labels)),
+        'stock_data': json.dumps(decimal_to_float(stock_data)),
     }
 
     return render(request, 'core/dashboard.html', ctx)
+
 
 
 # ===============================================================
@@ -332,3 +348,116 @@ def finanzas(request):
         'total_ingresos': totals.get('total_ingresos', 0) or 0,
         'total_gastos': totals.get('total_gastos', 0) or 0,
     })
+
+# ===============================================================
+# ===================== EXPORTAR A EXCEL ========================
+# ===============================================================
+
+@login_required
+def exportar_compras_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Compras"
+
+    columnas = ["Fecha", "Producto", "Proveedor", "Cantidad", "Total", "Doc Ref"]
+    ws.append(columnas)
+
+    compras = Compra.objects.select_related("producto", "proveedor")
+
+    for c in compras:
+        ws.append([
+            str(c.fecha_compra),
+            c.producto.nombre,
+            c.proveedor.razon_social,
+            float(c.cantidad),
+            float(c.total),
+            c.doc_referencia,
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="compras.xlsx"'
+    wb.save(response)
+    return response
+
+
+@login_required
+def exportar_produccion_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Producción"
+
+    columnas = ["Fecha", "Producto", "Cantidad Producida"]
+    ws.append(columnas)
+
+    producciones = Produccion.objects.select_related("producto")
+
+    for p in producciones:
+        ws.append([
+            str(p.fecha_produccion),
+            p.producto.nombre,
+            float(p.cantidad_producida),
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="produccion.xlsx"'
+    wb.save(response)
+    return response
+
+
+@login_required
+def exportar_ventas_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Ventas"
+
+    columnas = ["Fecha", "Producto", "Cantidad", "Total", "Doc Ref"]
+    ws.append(columnas)
+
+    ventas = Venta.objects.select_related("producto")
+
+    for v in ventas:
+        ws.append([
+            str(v.fecha_venta),
+            v.producto.nombre,
+            float(v.cantidad),
+            float(v.total),
+            v.doc_referencia,
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="ventas.xlsx"'
+    wb.save(response)
+    return response
+
+
+@login_required
+def exportar_finanzas_excel(request):
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Finanzas"
+
+    columnas = ["Fecha", "Descripción", "Ingreso", "Gasto"]
+    ws.append(columnas)
+
+    registros = Finanzas.objects.all()
+
+    for f in registros:
+        ws.append([
+            str(f.fecha),
+            f.descripcion,
+            float(f.ingreso or 0),
+            float(f.gasto or 0),
+        ])
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    )
+    response['Content-Disposition'] = 'attachment; filename="finanzas.xlsx"'
+    wb.save(response)
+    return response
